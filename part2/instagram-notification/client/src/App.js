@@ -1,25 +1,54 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState, useRef } from "react";
+import "./App.css";
+import Card from "./components/card/Card";
+import Navbar from "./components/navbar/Navbar";
+import { posts } from "./data";
+import { io } from "socket.io-client";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+    const socketIo = useRef(null);
+    const [user, setUser] = useState("");
+
+    useEffect(() => {
+        socketIo.current = io("http://localhost:5000");
+    }, []);
+
+    const setUserNameHandler = (e) => {
+        setUser(e.target.value);
+    };
+    const loginHandler = () => {
+        socketIo.emit("newUser", user);
+    };
+
+    return (
+        <div className="container">
+            {user ? (
+                <>
+                    <Navbar socket={socketIo} />
+                    {posts.map((post) => (
+                        <Card
+                            key={post.id}
+                            post={post}
+                            socket={socketIo}
+                            user={user}
+                        />
+                    ))}
+                    <span className="username">{user}</span>
+                </>
+            ) : (
+                <div className="login">
+                    <h2>Instagram notification clone</h2>
+                    <input
+                        type="text"
+                        value={user}
+                        placeholder="Enter your name"
+                        onChange={setUserNameHandler}
+                    />
+                    <button onClick={loginHandler}>Login</button>
+                </div>
+            )}
+        </div>
+    );
+};
 
 export default App;
