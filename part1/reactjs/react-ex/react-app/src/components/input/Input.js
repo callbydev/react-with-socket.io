@@ -8,7 +8,12 @@ const Input = () => {
   };
   return (
     <div className="input-box">
-      <input type="text" value={text} onChange={onChangeHandler} />
+      <input
+        type="text"
+        className="input"
+        value={text}
+        onChange={onChangeHandler}
+      />
       <div>{text}</div>
     </div>
   );
