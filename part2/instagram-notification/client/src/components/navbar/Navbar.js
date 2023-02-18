@@ -4,53 +4,28 @@ import { AiOutlineHeart } from "react-icons/ai";
 import { HiOutlinePaperAirplane } from "react-icons/hi";
 
 const Navbar = ({ socket }) => {
-    const [notifications, setNotifications] = useState([]);
-    const [open, setOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
 
-    useEffect(() => {
-        if (!socket.current) return;
-        socket.current.on("getNotification", (data) => {
-            setNotifications((prev) => [...prev, data]);
-        });
-    }, [socket]);
+  useEffect(() => {
+    if (!socket.current) return;
+    socket.current.on("getNotification", (data) => {
+      setNotifications((prev) => [...prev, data]);
+    });
+  }, [socket]);
 
-    const displayNotification = ({ senderName, type }) => {
-        let action;
-
-        if (type === 1) {
-            action = "liked";
-        } else if (type === 2) {
-            action = "commented";
-        } else {
-            action = "shared";
-        }
-        return (
-            <span className="notification">{`${senderName} ${action} your post.`}</span>
-        );
-    };
-
-    const handleRead = () => {
-        setNotifications([]);
-        setOpen(false);
-    };
-
-    return (
-        <div className="navbar">
-            <span className="logo">Instagram</span>
-            <div className="icons">
-                <AiOutlineHeart size="20" />
-                <HiOutlinePaperAirplane size="20" />
-            </div>
-            {open && (
-                <div className="notifications">
-                    {notifications.map((n) => displayNotification(n))}
-                    <button className="nButton" onClick={handleRead}>
-                        Mark as read
-                    </button>
-                </div>
-            )}
+  return (
+    <div className="navbar">
+      <span className="logo">Instagram</span>
+      <div className="icons">
+        <div className="heart-container">
+          {notifications.length > 0 && <span className="noti"></span>}
+          <AiOutlineHeart size="20" className="heart" />
         </div>
-    );
+
+        <HiOutlinePaperAirplane className="airplane" size="20" />
+      </div>
+    </div>
+  );
 };
 
 export default Navbar;

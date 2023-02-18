@@ -1,52 +1,41 @@
 const { Server } = require("socket.io");
-
-const io = new Server({
-    cors: {
-        origin: "http://localhost:3000",
-    },
+const { posts } = require("./data");
+const io = new Server("5000", {
+  cors: {
+    origin: "http://localhost:3000",
+  },
 });
 
-let onlineUsers = [];
+let users = [];
 
 const addNewUser = (username, socketId) => {
-    console.log(username, onlineUsers);
-    !onlineUsers.some((user) => user.username === username) &&
-        onlineUsers.push({ username, socketId });
-};
-
-const removeUser = (socketId) => {
-    onlineUsers = onlineUsers.filter((user) => user.socketId !== socketId);
+  !users.some((user) => user.username === username) &&
+    users.unshift({
+      ...posts[Math.floor(Math.random() * 5)],
+      username,
+      socketId,
+    });
 };
 
 const getUser = (username) => {
-    return onlineUsers.find((user) => user.username === username);
+  return users.find((user) => user.username === username);
 };
 
 io.on("connection", (socket) => {
-    socket.on("newUser", (username) => {
-        console.log(username);
-        addNewUser(username, socket.id);
-    });
+  socket.on("newUser", (username) => {
+    addNewUser(username, socket.id);
+    io.sockets.emit("user-list", JSON.stringify(users));
+  });
 
-    socket.on("sendNotification", ({ senderName, receiverName, type }) => {
-        const receiver = getUser(receiverName);
-        io.to(receiver.socketId).emit("getNotification", {
-            senderName,
-            type,
-        });
+  socket.on("sendNotification", ({ senderName, receiverName, type }) => {
+    const receiver = getUser(receiverName);
+    io.to(receiver.socketId).emit("getNotification", {
+      senderName,
+      type,
     });
+  });
 
-    socket.on("sendText", ({ senderName, receiverName, text }) => {
-        const receiver = getUser(receiverName);
-        io.to(receiver.socketId).emit("getText", {
-            senderName,
-            text,
-        });
-    });
-
-    socket.on("disconnect", () => {
-        removeUser(socket.id);
-    });
+  socket.on("disconnect", () => {
+    console.log("logout");
+  });
 });
-
-io.listen(5000);
