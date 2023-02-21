@@ -1,6 +1,6 @@
 import "./navbar.css";
 import { useEffect, useState } from "react";
-import { AiOutlineHeart } from "react-icons/ai";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { HiOutlinePaperAirplane } from "react-icons/hi";
 
 const Navbar = ({ socket }) => {
@@ -11,7 +11,7 @@ const Navbar = ({ socket }) => {
     socket.current.on("getNotification", (data) => {
       setNotifications((prev) => [...prev, data]);
     });
-  }, [socket]);
+  }, []);
 
   return (
     <div className="navbar">
@@ -20,6 +20,12 @@ const Navbar = ({ socket }) => {
         <div className="heart-container">
           {notifications.length > 0 && <span className="noti"></span>}
           <AiOutlineHeart size="20" className="heart" />
+          {notifications.length > 0 && (
+            <div className="like-bubble">
+              <AiFillHeart size="15" color="#fff" />{" "}
+              <div className="count">{notifications.length}</div>
+            </div>
+          )}
         </div>
 
         <HiOutlinePaperAirplane className="airplane" size="20" />

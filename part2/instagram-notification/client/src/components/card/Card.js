@@ -5,7 +5,7 @@ import { HiOutlinePaperAirplane } from "react-icons/hi";
 import { BiMessageRounded } from "react-icons/bi";
 import { FiMoreVertical } from "react-icons/fi";
 
-const Card = ({ post, socket, loginUser }) => {
+const Card = ({ key, post, socket, loginUser }) => {
   const [liked, setLiked] = useState(false);
 
   const onLikeHandler = (e) => {
@@ -20,7 +20,7 @@ const Card = ({ post, socket, loginUser }) => {
   };
 
   return (
-    <div className="card">
+    <div className="card" key={key}>
       <div className="info">
         <div>
           <img src={post.userImg} alt="" className="userImg" />

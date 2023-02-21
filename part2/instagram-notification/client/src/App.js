@@ -4,6 +4,7 @@ import Card from "./components/card/Card";
 import Navbar from "./components/navbar/Navbar";
 import { io } from "socket.io-client";
 
+
 const App = () => {
   const socketIo = useRef(null);
   const [user, setUser] = useState("");

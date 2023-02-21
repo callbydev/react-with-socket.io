@@ -39,3 +39,20 @@
 .navbar .icons .heart-container .heart {
   vertical-align: text-top;
 }
+
+.navbar .icons .heart-container .like-bubble {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  position: absolute;
+  padding: 5px 10px;
+  background-color: red;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  right: 10px;
+  bottom: -27px;
+}
+.count {
+  color: #fff;
+}
