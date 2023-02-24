@@ -1,5 +1,5 @@
-import "./navbar.css";
 import { useEffect, useState } from "react";
+import "./navbar.css";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { HiOutlinePaperAirplane } from "react-icons/hi";
 
@@ -11,6 +11,10 @@ const Navbar = ({ socket }) => {
     socket.current.on("getNotification", (data) => {
       setNotifications((prev) => [...prev, data]);
     });
+
+    return () => {
+      socket.current.off("getNotification");
+    }
   }, []);
 
   return (

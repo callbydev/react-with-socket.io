@@ -13,6 +13,7 @@ const App = () => {
 
   useEffect(() => {
     socketIo.current = io("http://localhost:5000");
+
   }, []);
 
   useEffect(() => {
@@ -21,6 +22,9 @@ const App = () => {
     socketIo.current.on("user-list", (data) => {
       setPost(JSON.parse(data));
     });
+    return () => {
+      socketIo.current.off("user-list");
+    }
   }, [isLogin]);
 
   const setUserNameHandler = (e) => {
