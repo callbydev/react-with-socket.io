@@ -31,7 +31,10 @@ const HomeContainer = () => {
           </Link>
         </li>
         <li className={cx("movie")}>
-          <Link to={`/seat/2`} style={{ textDecoration: "none" }}>
+          <Link
+            to={`/seat/2/Ant-Man and the Wasp:Quantumania`}
+            style={{ textDecoration: "none" }}
+          >
             <div className={cx("img_wrap")}>
               <img
                 src={antman}
@@ -49,7 +52,10 @@ const HomeContainer = () => {
           </Link>
         </li>
         <li className={cx("movie")}>
-          <Link to={`/seat/3`} style={{ textDecoration: "none" }}>
+          <Link
+            to={`/seat/3/Puss in Boots: The Last Wish`}
+            style={{ textDecoration: "none" }}
+          >
             <div className={cx("img_wrap")}>
               <img
                 src={cat}

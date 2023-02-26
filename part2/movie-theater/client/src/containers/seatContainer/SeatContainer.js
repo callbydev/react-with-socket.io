@@ -9,20 +9,52 @@ const cx = classNames.bind(styles);
 const SeatContainer = () => {
   const { id, title } = useParams();
   const socketIo = useRef(null);
-  const [seats, setSeats] = useState([
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-  ]);
+  const [booked, setBooked] = useState("");
+  const [seats, setSeats] = useState([]);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
     socketIo.current = io("http://localhost:5000");
   }, []);
 
+  useEffect(() => {
+    if (!socketIo.current) return;
+    socketIo.current.emit("join", id);
+  }, [socketIo.current]);
+
+  useEffect(() => {
+    if (!socketIo.current) return;
+    socketIo.current.on("sSeatMessage", (data) => {
+      setSeats(data);
+    });
+    return () => {
+      socketIo.current.off("sSeatMessage");
+    };
+  }, []);
+
+  const onClickHandler = (e) => {
+    const { id, status } = e.target.dataset;
+    if (status === "3" || status === "0") return;
+    setBooked(id);
+    const tempSeats = seats.map((s) => {
+      return s.map((i) => {
+        let temp = { ...i };
+        if (i.seatNumber === id) {
+          temp = { ...i, status: 2 };
+        } else {
+          temp = { ...i, status: i.status === 2 ? 1 : i.status };
+        }
+        return temp;
+      });
+    });
+    setSeats(tempSeats);
+  };
+
+  const onConfirmHandler = () => {
+    if (!booked) return;
+    socketIo.current.emit("addSeat", booked);
+    setIsDisabled(true);
+  };
   return (
     <div className={cx("seat_container")}>
       <h2 className={cx("title")}>{title}</h2>
@@ -32,11 +64,28 @@ const SeatContainer = () => {
           return v.map((i, idx) => (
             <li
               key={`seat_${idx}`}
-              className={cx("seat", i === 0 && "empty")}
+              data-id={i.seatNumber}
+              data-status={i.status}
+              className={cx(
+                "seat",
+                i.status === 0 && "empty",
+                i.status === 1 && "default",
+                i.status === 2 && "active",
+                i.status === 3 && "soldout"
+              )}
+              onClick={onClickHandler}
             ></li>
           ));
         })}
       </ul>
+      <div className={cx("r_wrap")}>
+        <h4 className={cx("r_title")}>{booked}</h4>
+        {!isDisabled && (
+          <button className={cx("r_confirm")} onClick={onConfirmHandler}>
+            Confirm
+          </button>
+        )}
+      </div>
     </div>
   );
 };
