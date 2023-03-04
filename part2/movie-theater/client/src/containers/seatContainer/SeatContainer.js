@@ -15,6 +15,9 @@ const SeatContainer = () => {
 
   useEffect(() => {
     socketIo.current = io("http://localhost:5000");
+    return () => {
+      socketIo.current.disconnect();
+    };
   }, []);
 
   useEffect(() => {

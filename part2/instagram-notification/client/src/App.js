@@ -4,7 +4,6 @@ import Card from "./components/card/Card";
 import Navbar from "./components/navbar/Navbar";
 import { io } from "socket.io-client";
 
-
 const App = () => {
   const socketIo = useRef(null);
   const [user, setUser] = useState("");
@@ -13,7 +12,9 @@ const App = () => {
 
   useEffect(() => {
     socketIo.current = io("http://localhost:5000");
-
+    return () => {
+      socketIo.current.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -24,7 +25,7 @@ const App = () => {
     });
     return () => {
       socketIo.current.off("user-list");
-    }
+    };
   }, [isLogin]);
 
   const setUserNameHandler = (e) => {
