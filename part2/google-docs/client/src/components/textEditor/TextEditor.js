@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
+import QuillCursors from "quill-cursors";
 import "./textEditor.css";
-import ReactQuill from "react-quill";
+import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 const modules = {
+  cursors: true,
   toolbar: [
     [{ header: [1, 2, 3, 4, 5, 6, false] }],
     [{ font: [] }],
@@ -17,7 +19,9 @@ const modules = {
   ],
 };
 
-const TextEditor = ({ text, onChangeTextHandler }) => {
+Quill.register("modules/cursors", QuillCursors);
+
+const TextEditor = ({ text, onChangeTextHandler, reactQuillRef, onChangeSelection }) => {
   return (
     <div className="container">
       <ReactQuill
@@ -25,6 +29,10 @@ const TextEditor = ({ text, onChangeTextHandler }) => {
         modules={modules}
         value={text}
         onChange={onChangeTextHandler}
+        onChangeSelection={onChangeSelection}
+        ref={(el) => {
+          reactQuillRef.current = el;
+        }}
       />
     </div>
   );

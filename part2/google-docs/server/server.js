@@ -29,17 +29,22 @@ io.on("connection", (socket) => {
     console.log(document.data, documentId);
     socket.join(documentId);
     socket.emit("initDocument", document.data);
-
-    socket.on("save-document", async (data) => {
-      await Document.findByIdAndUpdate(_documentId, { data });
-      socket.broadcast.in(_documentId).emit("receive-changes", data);
-    });
   });
 
-  // socket.on("send-changes", (delta) => {
-  //   console.log(_documentId);
-  //   socket.broadcast.to(_documentId).emit("receive-changes", delta);
-  // });
+  socket.on("save-document", async (data) => {
+    await Document.findByIdAndUpdate(_documentId, { data });
+  });
+
+  socket.on("send-changes", (delta) => {
+    socket.broadcast.to(_documentId).emit("receive-changes", delta);
+  });
+
+  socket.on("cursor-changes", (range) => {
+    const myRooms = Array.from(socket.rooms);
+    socket.broadcast
+      .to(_documentId)
+      .emit("receive-cursor", { range: range, id: myRooms[0] });
+  });
 
   socket.on("disconnect", () => {
     console.log("disconnect...");
