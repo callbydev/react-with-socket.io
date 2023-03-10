@@ -21,14 +21,18 @@ const io = require("socket.io")(5000, {
 });
 const defaultValue = "";
 
+const user = [];
+
 io.on("connection", (socket) => {
   let _documentId = "";
   socket.on("join", async (documentId) => {
     _documentId = documentId;
     const document = await findOrCreateDocument(documentId);
-    console.log(document.data, documentId);
     socket.join(documentId);
-    socket.emit("initDocument", document.data);
+    socket.emit("initDocument", { _document: document.data, userList: user });
+    const myId = Array.from(socket.rooms)[0];
+    user.push(myId);
+    socket.broadcast.to(_documentId).emit("newUser", myId);
   });
 
   socket.on("save-document", async (data) => {

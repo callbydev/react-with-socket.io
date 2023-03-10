@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import QuillCursors from "quill-cursors";
 import "./textEditor.css";
 import ReactQuill, { Quill } from "react-quill";
@@ -21,7 +21,12 @@ const modules = {
 
 Quill.register("modules/cursors", QuillCursors);
 
-const TextEditor = ({ text, onChangeTextHandler, reactQuillRef, onChangeSelection }) => {
+const TextEditor = ({
+  text,
+  onChangeTextHandler,
+  reactQuillRef,
+  onChangeSelection,
+}) => {
   return (
     <div className="container">
       <ReactQuill
