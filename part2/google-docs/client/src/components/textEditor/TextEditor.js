@@ -1,6 +1,7 @@
-import React from "react";
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
 import QuillCursors from "quill-cursors";
-import "./textEditor.css";
+import { container } from "./textEditor.styled.js";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
@@ -28,7 +29,7 @@ const TextEditor = ({
   onChangeSelection,
 }) => {
   return (
-    <div className="container">
+    <div css={container}>
       <ReactQuill
         theme="snow"
         modules={modules}

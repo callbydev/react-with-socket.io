@@ -21,7 +21,9 @@ const io = require("socket.io")(5000, {
 });
 const defaultValue = "";
 
-const user = [];
+const userMap = new Map();
+
+console.log(userMap);
 
 io.on("connection", (socket) => {
   let _documentId = "";
@@ -29,9 +31,12 @@ io.on("connection", (socket) => {
     _documentId = documentId;
     const document = await findOrCreateDocument(documentId);
     socket.join(documentId);
-    socket.emit("initDocument", { _document: document.data, userList: user });
+    socket.emit("initDocument", {
+      _document: document.data,
+      userList: userMap.get(documentId) || [],
+    });
     const myId = Array.from(socket.rooms)[0];
-    user.push(myId);
+    setUserMap(_documentId, myId);
     socket.broadcast.to(_documentId).emit("newUser", myId);
   });
 
@@ -54,6 +59,15 @@ io.on("connection", (socket) => {
     console.log("disconnect...");
   });
 });
+
+function setUserMap(documentId, myId) {
+  const tempUserList = userMap.get(documentId);
+  if (!tempUserList) {
+    userMap.set(documentId, [myId]);
+  } else {
+    userMap.set(documentId, [...tempUserList, myId]);
+  }
+}
 
 async function findOrCreateDocument(id) {
   if (id == null) return;
