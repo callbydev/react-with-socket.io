@@ -4,11 +4,12 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+// 1
 import { v4 as uuidV4 } from "uuid";
 import EditorContainer from "./containers/editorContainer/EditorContainer";
-import './App.css';
 
 function App() {
+  // 2
   return (
     <Router>
       <Routes>

@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
+// 1
 import { io } from "socket.io-client";
 import { useParams } from "react-router-dom";
 import { debounce } from "lodash-es";
 import TextEditor from "../../components/textEditor/TextEditor";
 
+// 2
 const cursorMap = new Map();
 const cursorColor = [
   "#FF0000",
@@ -21,22 +23,26 @@ const EditorContainer = () => {
   const timerRef = useRef(null);
   const cursorRef = useRef(null);
   const reactQuillRef = useRef(null);
+  // 3
   const { id: documentId } = useParams();
 
   const [text, setText] = useState("");
 
+  // 4
   useEffect(() => {
-    socketIo.current = io("http://localhost:5000");
+    socketIo.current = io("http://localhost:5001");
     return () => {
       socketIo.current.disconnect();
     };
   }, []);
 
+  // 5
   useEffect(() => {
     if (!socketIo.current) return;
     socketIo.current.emit("join", documentId);
   }, []);
 
+  // 6
   useEffect(() => {
     if (!socketIo.current) return;
     socketIo.current.once("initDocument", (res) => {
@@ -48,6 +54,7 @@ const EditorContainer = () => {
     });
   }, []);
 
+  // 7
   useEffect(() => {
     if (!socketIo.current) return;
 
@@ -59,11 +66,13 @@ const EditorContainer = () => {
     };
   }, []);
 
+  // 8
   useEffect(() => {
     if (!reactQuillRef.current) return;
     cursorRef.current = reactQuillRef.current.getEditor().getModule("cursors");
   }, []);
 
+  // 9
   useEffect(() => {
     if (!socketIo.current) return;
 
@@ -75,6 +84,8 @@ const EditorContainer = () => {
       socketIo.current.off("receive-changes");
     };
   }, []);
+
+  // 10
   useEffect(() => {
     if (!socketIo.current) return;
 
@@ -87,6 +98,7 @@ const EditorContainer = () => {
     };
   }, []);
 
+  // 11
   const onChangeTextHandler = (content, delta, source, editor) => {
     if (!socketIo.current) return;
     if (timerRef.current != null) {
@@ -103,6 +115,7 @@ const EditorContainer = () => {
     socketIo.current.emit("send-changes", delta);
   };
 
+  // 12
   function setCursor(id) {
     if (!cursorMap.get(id)) {
       cursorRef.current.createCursor(
@@ -114,10 +127,12 @@ const EditorContainer = () => {
     }
   }
 
+  // 13
   const debouncedUpdate = debounce((range, id) => {
     cursorMap.get(id).moveCursor(id, range);
   }, 500);
 
+  // 14
   const onChangeSelection = (selection, source, editor) => {
     if (source !== "user") return;
     socketIo.current.emit("cursor-changes", selection);

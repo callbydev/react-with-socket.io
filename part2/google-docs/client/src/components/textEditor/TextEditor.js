@@ -1,3 +1,4 @@
+// 1
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import QuillCursors from "quill-cursors";
@@ -5,6 +6,7 @@ import { container } from "./textEditor.styled.js";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
+// 2
 const modules = {
   cursors: true,
   toolbar: [
@@ -22,6 +24,7 @@ const modules = {
 
 Quill.register("modules/cursors", QuillCursors);
 
+// 3
 const TextEditor = ({
   text,
   onChangeTextHandler,
