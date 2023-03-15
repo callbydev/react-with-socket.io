@@ -77,7 +77,6 @@ const EditorContainer = () => {
     if (!socketIo.current) return;
 
     socketIo.current.on("receive-changes", (delta) => {
-      console.log("rece", delta);
       reactQuillRef.current.getEditor().updateContents(delta);
     });
     return () => {
