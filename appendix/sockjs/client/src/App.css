@@ -1,0 +1,64 @@
+.app-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.app-container > .wrap > .login-box > .login-title {
+  margin: 0;
+  padding: 0;
+}
+.app-container > .wrap > .login-box > .login-form {
+  margin-top: 20px;
+}
+.app-container > .wrap > .login-box > .login-form input {
+  width: calc(100% - 10px);
+}
+.app-container > .wrap > .login-box > .login-form > .btn-box {
+  margin-top: 10px;
+  text-align: right;
+}
+
+.app-container > .wrap > .chat-box .chat {
+  list-style: none;
+  padding: 0 10px;
+  margin: 0;
+  border: 1px solid #cecece;
+  border-radius: 10px;
+  width: 300px;
+  height: 300px;
+  overflow: auto;
+}
+.app-container > .wrap > .chat-box .chat li.me {
+  text-align: left;
+}
+.app-container > .wrap > .chat-box .chat li.other {
+  text-align: right;
+}
+.app-container > .wrap > .chat-box .chat div.me {
+  margin-top: 5px;
+  padding: 5px;
+  display: inline-block;
+  border-top-right-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  background-color: #cecece;
+}
+.app-container > .wrap > .chat-box .chat div.other {
+  margin-top: 5px;
+  padding: 5px;
+  display: inline-block;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  background-color: #000;
+  color: #fff;
+}
+.app-container > .wrap > .chat-box .send-form {
+  margin-top: 10px;
+}
+.app-container > .wrap > .chat-box .send-form input {
+  width: 79%;
+  margin-right: 10px;
+}

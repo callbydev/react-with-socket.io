@@ -30,7 +30,7 @@ const EditorContainer = () => {
 
   // 4
   useEffect(() => {
-    socketIo.current = io("http://localhost:5001");
+    socketIo.current = io("http://localhost:5000");
     return () => {
       socketIo.current.disconnect();
     };
