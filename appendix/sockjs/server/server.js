@@ -10,7 +10,7 @@ const clients = new Map();
 sock.on("connection", function (conn) {
   let myId = "";
   conn.on("data", function (message) {
-    const { data, type } = JSON.parse(message);
+    const { data, type, id } = JSON.parse(message);
     switch (type) {
       case "id":
         myId = data;
@@ -19,7 +19,7 @@ sock.on("connection", function (conn) {
       case "msg":
         clients.forEach((value, key, map) => {
           if (key !== myId) {
-            value.write(data);
+            value.write(JSON.stringify({ data: data, id: id }));
           }
         });
         break;
@@ -28,7 +28,7 @@ sock.on("connection", function (conn) {
     }
   });
   conn.on("close", function () {
-    delete clients[myId];
+    clients.delete(myId);
   });
 });
 

@@ -5,6 +5,7 @@ import sockLogo from "./images/sockjs.png";
 
 function App() {
   const sockJs = useRef(null);
+  const messagesEndRef = useRef(null);
   const [userId, setUserId] = useState("");
   const [isLogin, setIsLogin] = useState(false);
   const [msg, setMsg] = useState("");
@@ -15,15 +16,23 @@ function App() {
   useEffect(() => {
     if (!sockJs.current) return;
     sockJs.current.onopen = function () {
-      console.log("[*] open", sockJs.current.protocol);
+      console.log("open", sockJs.current.protocol);
     };
     sockJs.current.onmessage = function (e) {
-      setMsgList((prev) => [...prev, { msg: e.data, type: "other" }]);
+      const { data, id } = JSON.parse(e.data);
+      setMsgList((prev) => [...prev, { msg: data, type: "other", id: id }]);
     };
     sockJs.current.onclose = function () {
-      console.log("[*] close");
+      console.log("close");
     };
   }, []);
+  useEffect(() => {
+    scrollToBottom();
+  }, [msgList]);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const sendData = {
@@ -41,9 +50,10 @@ function App() {
     const sendData = {
       type: "msg",
       data: msg,
+      id: userId,
     };
     sockJs.current.send(JSON.stringify(sendData));
-    setMsgList((prev) => [...prev, { msg: msg, type: "me" }]);
+    setMsgList((prev) => [...prev, { msg: msg, type: "me", id: userId }]);
     setMsg("");
   };
   const onChangeMsgHandler = (e) => {
@@ -58,9 +68,11 @@ function App() {
             <ul className="chat">
               {msgList.map((v, i) => (
                 <li className={v.type} key={`${i}_li`}>
+                  <div className="userId">{v.id}</div>
                   <div className={v.type}>{v.msg}</div>
                 </li>
               ))}
+              <li ref={messagesEndRef} />
             </ul>
             <form className="send-form" onSubmit={onSendSubmitHandler}>
               <input
