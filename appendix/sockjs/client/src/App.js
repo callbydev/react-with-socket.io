@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import "./App.css";
+// 1
 import SockJs from "sockjs-client";
 import sockLogo from "./images/sockjs.png";
 
@@ -11,8 +12,10 @@ function App() {
   const [msg, setMsg] = useState("");
   const [msgList, setMsgList] = useState([]);
   useEffect(() => {
+    // 2
     sockJs.current = new SockJs("http://0.0.0.0:9999/sock");
   }, []);
+  // 3
   useEffect(() => {
     if (!sockJs.current) return;
     sockJs.current.onopen = function () {
@@ -26,6 +29,7 @@ function App() {
       console.log("close");
     };
   }, []);
+  // 4
   useEffect(() => {
     scrollToBottom();
   }, [msgList]);
@@ -33,7 +37,8 @@ function App() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const handleSubmit = (e) => {
+  // 5
+  const onSubmitHandler = (e) => {
     e.preventDefault();
     const sendData = {
       type: "id",
@@ -42,9 +47,11 @@ function App() {
     sockJs.current.send(JSON.stringify(sendData));
     setIsLogin(true);
   };
+  // 6
   const onChangeUserIdHandler = (e) => {
     setUserId(e.target.value);
   };
+  // 7
   const onSendSubmitHandler = (e) => {
     e.preventDefault();
     const sendData = {
@@ -56,6 +63,7 @@ function App() {
     setMsgList((prev) => [...prev, { msg: msg, type: "me", id: userId }]);
     setMsg("");
   };
+  // 8
   const onChangeMsgHandler = (e) => {
     setMsg(e.target.value);
   };
@@ -63,6 +71,7 @@ function App() {
     <div className="app-container">
       <div className="wrap">
         {isLogin ? (
+          // 9
           <div className="chat-box">
             <h3>Login as a "{userId}"</h3>
             <ul className="chat">
@@ -84,12 +93,13 @@ function App() {
             </form>
           </div>
         ) : (
+          // 10
           <div className="login-box">
             <h1 className="login-title">
               SockChat{" "}
               <img src={sockLogo} width="30px" height="auto" alt="logo" />
             </h1>
-            <form className="login-form" onSubmit={handleSubmit}>
+            <form className="login-form" onSubmit={onSubmitHandler}>
               <input
                 placeholder="Enter your ID"
                 onChange={onChangeUserIdHandler}

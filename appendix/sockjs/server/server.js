@@ -1,16 +1,20 @@
+// 1
 const http = require("http");
 const sockjs = require("sockjs");
 
-const sock = sockjs.createServer({
-  sockjs_url: "http://cdn.jsdelivr.net/sockjs/1.0.1/sockjs.min.js",
-});
+// 2
+const sock = sockjs.createServer();
 
+// 3
 const clients = new Map();
 
+// 4
 sock.on("connection", function (conn) {
   let myId = "";
+  // 5
   conn.on("data", function (message) {
     const { data, type, id } = JSON.parse(message);
+    // 6
     switch (type) {
       case "id":
         myId = data;
@@ -32,6 +36,7 @@ sock.on("connection", function (conn) {
   });
 });
 
+// 7
 const server = http.createServer();
 sock.installHandlers(server, { prefix: "/sock" });
 server.listen(9999, "0.0.0.0");

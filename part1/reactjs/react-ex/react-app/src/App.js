@@ -1,7 +1,7 @@
-import Input from "./components/input/Input";
+import MainContainer from "./containers/mainContainer/MainContainer";
 
 function App() {
-  return <Input />;
+  return <MainContainer />;
 }
 
 export default App;
