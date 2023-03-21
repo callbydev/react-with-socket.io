@@ -1,0 +1,11 @@
+.goalWrap {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+.text {
+  color: #edd200;
+}
+.textDisabled {
+  color: #cecece;
+}

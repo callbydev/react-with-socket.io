@@ -49,4 +49,13 @@
   width: 500px;
   height: inherit;
   background-color: #000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.goals {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  flex: 1 1 auto;
 }

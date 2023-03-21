@@ -1,21 +1,20 @@
 import React, { useState } from "react";
-import "./input.css";
+import styles from "./input.module.css";
 
-const Input = () => {
-  const [text, setText] = useState("");
-  const onChangeHandler = (e) => {
-    setText(e.target.value);
-  };
+const Input = ({ onChange, onClick, value }) => {
   return (
-    <div className="input-box">
+    <form className={styles.inputBox} onSubmit={onClick}>
       <input
+        className={styles.input}
         type="text"
-        className="input"
-        value={text}
-        onChange={onChangeHandler}
+        placeholder="What is your goal?"
+        onChange={onChange}
+        value={value}
       />
-      <div>{text}</div>
-    </div>
+      <button type="submit" className={styles.button}>
+        send
+      </button>
+    </form>
   );
 };
 
