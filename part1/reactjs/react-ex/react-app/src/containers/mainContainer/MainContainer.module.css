@@ -43,8 +43,6 @@
 .li:first-of-type::after {
   height: 0;
 }
-.addWrap {
-}
 .content {
   width: 500px;
   height: inherit;
@@ -53,9 +51,14 @@
   flex-direction: column;
   gap: 10px;
 }
+.addWrap {
+  text-align: right;
+  padding: 10px;
+}
 .goals {
   padding: 0;
   margin: 0;
   list-style: none;
   flex: 1 1 auto;
+  overflow: auto;
 }

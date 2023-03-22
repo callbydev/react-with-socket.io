@@ -1,8 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import styles from "./MainContainer.module.css";
-import { IoAddCircleSharp } from "react-icons/io5";
 import dayjs from "dayjs";
 import { Input, Goal } from "../../components";
+import { MdPlaylistAdd } from "react-icons/md";
 
 const MainContainer = () => {
   const [memoData, setMemoData] = useState(new Map());
@@ -33,9 +33,18 @@ const MainContainer = () => {
     setGoalMsg(e.target.value);
   };
   const onCheckChange = (e) => {
-    console.log(e.target.checked);
+    const checked = e.target.checked;
+    const msg = e.target.dataset.msg;
+    const currentGoalList = memoData.get(currentDate);
+    const newGoal = currentGoalList.map((v) => {
+      let temp = { ...v };
+      if (v.msg === msg) {
+        temp = { msg: v.msg, status: checked };
+      }
+      return temp;
+    });
+    setMemoData((prev) => new Map(prev).set(currentDate, [...newGoal]));
   };
-  console.log(memoData);
   return (
     <div className={styles.memoContainer}>
       <div className={styles.memoWrap}>
@@ -53,9 +62,10 @@ const MainContainer = () => {
             ))}
           </ul>
           <div className={styles.addWrap}>
-            <IoAddCircleSharp
-              size="50"
-              color="#fff"
+            <MdPlaylistAdd
+              size="30"
+              color="#edd200"
+              style={{ cursor: "pointer" }}
               onClick={onAddDateHandler}
             />
           </div>
@@ -67,8 +77,9 @@ const MainContainer = () => {
                 {memoData.get(currentDate).map((v, i) => (
                   <li key={`goal_${i}`}>
                     <Goal
+                      id={`goal_${i}`}
                       msg={v.msg}
-                      status={true}
+                      status={v.status}
                       onCheckChange={onCheckChange}
                     />
                   </li>
