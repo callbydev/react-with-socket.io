@@ -12,7 +12,7 @@ const Input = ({ onChange, onClick, value }) => {
         value={value}
       />
       <button type="submit" className={styles.button}>
-        send
+        Add
       </button>
     </form>
   );
