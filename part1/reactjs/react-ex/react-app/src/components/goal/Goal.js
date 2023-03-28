@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./Goal.module.css";
 
+// 1
 const Goal = ({ id, status, msg, onCheckChange }) => {
   return (
     <div className={styles.goalWrap}>
@@ -8,7 +9,10 @@ const Goal = ({ id, status, msg, onCheckChange }) => {
         className={status ? styles.textDisabled : styles.text}
         htmlFor={id}
       >
-        {status && <div className={styles.clean} />}
+        {
+          // 2
+          status && <div className={styles.clean} />
+        }
         <input
           type="checkbox"
           id={id}
