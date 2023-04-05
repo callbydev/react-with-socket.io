@@ -1,8 +1,12 @@
+// 1
 const WebSocket = require("ws");
 
+// 2
 const wss = new WebSocket.Server({ port: 5000 });
 
+// 3
 wss.on("connection", (ws) => {
+    // 4
     const broadCastHandler = (msg) => {
         wss.clients.forEach(function each(client, i) {
             if (client !== ws && client.readyState === WebSocket.OPEN) {
@@ -11,6 +15,7 @@ wss.on("connection", (ws) => {
         });
     };
 
+    // 5
     ws.on("message", (res) => {
         const { type, data, id } = JSON.parse(res);
         switch (type) {

@@ -1,21 +1,24 @@
 import React, { useRef, useEffect, useState } from "react";
 import "./App.css";
-// 1
 import logo from "./images/websocket.png";
 
+// 1
 const webSocket = new WebSocket("ws://localhost:5000");
 
 function App() {
+    // 2
     const messagesEndRef = useRef(null);
     const [userId, setUserId] = useState("");
     const [isLogin, setIsLogin] = useState(false);
     const [msg, setMsg] = useState("");
     const [msgList, setMsgList] = useState([]);
+    // 3
     useEffect(() => {
         if (!webSocket) return;
         webSocket.onopen = function () {
             console.log("open", webSocket.protocol);
         };
+        // 4
         webSocket.onmessage = function (e) {
             const { data, id, type } = JSON.parse(e.data);
             setMsgList((prev) => [
@@ -31,7 +34,7 @@ function App() {
             console.log("close");
         };
     }, []);
-    // 4
+    // 5
     useEffect(() => {
         scrollToBottom();
     }, [msgList]);
@@ -39,7 +42,7 @@ function App() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    // 5
+    // 6
     const onSubmitHandler = (e) => {
         e.preventDefault();
         const sendData = {
@@ -49,11 +52,11 @@ function App() {
         webSocket.send(JSON.stringify(sendData));
         setIsLogin(true);
     };
-    // 6
+    // 7
     const onChangeUserIdHandler = (e) => {
         setUserId(e.target.value);
     };
-    // 7
+    // 8
     const onSendSubmitHandler = (e) => {
         e.preventDefault();
         const sendData = {
@@ -65,7 +68,7 @@ function App() {
         setMsgList((prev) => [...prev, { msg: msg, type: "me", id: userId }]);
         setMsg("");
     };
-    // 8
+    // 9
     const onChangeMsgHandler = (e) => {
         setMsg(e.target.value);
     };
@@ -73,7 +76,7 @@ function App() {
         <div className="app-container">
             <div className="wrap">
                 {isLogin ? (
-                    // 9
+                    // 10
                     <div className="chat-box">
                         <h3>Login as a "{userId}"</h3>
                         <ul className="chat">
@@ -106,7 +109,7 @@ function App() {
                         </form>
                     </div>
                 ) : (
-                    // 10
+                    
                     <div className="login-box">
                         <div className="login-title">
                             <img
