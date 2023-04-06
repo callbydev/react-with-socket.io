@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import "./App.css";
 import logo from "./images/iologo.png";
+import { io } from "socket.io-client";
 
 // 1
 const webSocket = new WebSocket("ws://localhost:5000");
