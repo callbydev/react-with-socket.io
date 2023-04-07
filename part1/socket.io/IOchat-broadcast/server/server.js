@@ -14,10 +14,10 @@ io.sockets.on("connection", (socket) => {
     // 4
     socket.on("message", (data) => {
         // 5
-        socket.emit("sMessage", data);
+        socket.broadcast.emit("sMessage", data);
     });
     socket.on("login", (data) => {
-        socket.emit("sLogin", data);
+        socket.broadcast.emit("sLogin", data);
     });
     // 6
     socket.on("disconnect", () => {
