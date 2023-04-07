@@ -17,7 +17,7 @@ function App() {
     useEffect(() => {
         if (!webSocket) return;
         webSocket.on("sMessage", (msg) => {
-            const { data, id } = JSON.parse(msg);
+            const { data, id } = msg;
             setMsgList((prev) => [
                 ...prev,
                 {
@@ -28,13 +28,12 @@ function App() {
             ]);
         });
         webSocket.on("sLogin", (msg) => {
-            const { data, id } = JSON.parse(msg);
             setMsgList((prev) => [
                 ...prev,
                 {
-                    msg: `${data} joins the chat`,
+                    msg: `${msg} joins the chat`,
                     type: "welcome",
-                    id: id,
+                    id: '',
                 },
             ]);
         });
@@ -52,9 +51,7 @@ function App() {
         e.preventDefault();
         webSocket.emit(
             "login",
-            JSON.stringify({
-                data: userId,
-            })
+            userId
         );
         setIsLogin(true);
     };
@@ -71,9 +68,7 @@ function App() {
         };
         webSocket.emit(
             "message",
-            JSON.stringify({
-                ...sendData,
-            })
+            sendData
         );
         setMsgList((prev) => [...prev, { msg: msg, type: "me", id: userId }]);
         setMsg("");
