@@ -10,16 +10,16 @@ const io = new Server("5000", {
 
 // 3
 io.sockets.on("connection", (socket) => {
-    console.log("user connected");
     // 4
     socket.on("message", (data) => {
         // 5
         socket.broadcast.emit("sMessage", data);
     });
+    // 6
     socket.on("login", (data) => {
         socket.broadcast.emit("sLogin", data);
     });
-    // 6
+    // 7
     socket.on("disconnect", () => {
         console.log("user disconnected");
     });
