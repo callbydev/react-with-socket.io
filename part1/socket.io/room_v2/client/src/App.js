@@ -58,6 +58,7 @@ function App() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // 2
   const onSubmitHandler = (e) => {
     e.preventDefault();
     webSocket.emit("login", { userId: userId, roomNumber: roomNumber });
@@ -80,11 +81,11 @@ function App() {
   const onChangeMsgHandler = (e) => {
     setMsg(e.target.value);
   };
-  // 4
   const onSetPrivateTarget = (e) => {
     const { id } = e.target.dataset;
     setPrivateTarget((prev) => (prev === id ? "" : id));
   };
+  // 3
   const onRoomChangeHandler = (e) => {
     setRoomNumber(e.target.value);
   };
