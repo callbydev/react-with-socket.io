@@ -93,7 +93,9 @@ function App() {
       <div className="wrap">
         {isLogin ? (
           <div className="chat-box">
-            <h3>Login as a "{userId}"</h3>
+            <h3>
+              Login as a "{userId}" in Room {roomNumber}
+            </h3>
             <ul className="chat">
               {msgList.map((v, i) =>
                 v.type === "welcome" ? (
