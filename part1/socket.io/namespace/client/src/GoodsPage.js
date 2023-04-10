@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
+// 1
 import { socketGoods } from "./socket";
 
 const GoodsPage = () => {
+    // 2
     const [isConnect, setIsConnect] = useState(false);
+    // 3
     useEffect(() => {
         function onConnect() {
             setIsConnect(true);
@@ -18,9 +21,11 @@ const GoodsPage = () => {
             socketGoods.off("disconnect", onDisConnect);
         };
     }, []);
+    // 4
     const onConnectHandler = () => {
         socketGoods.connect();
     };
+    // 5
     const onDisConnectHandler = () => {
         socketGoods.disconnect();
     };

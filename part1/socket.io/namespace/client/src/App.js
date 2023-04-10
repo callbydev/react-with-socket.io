@@ -1,3 +1,4 @@
+// 1
 import {
     BrowserRouter as Router,
     Routes,
@@ -10,6 +11,7 @@ import "./App.css";
 
 function App() {
     return (
+        // 2
         <Router>
             <Routes>
                 <Route path="/" element={<Navigate replace to="/goods" />} />
