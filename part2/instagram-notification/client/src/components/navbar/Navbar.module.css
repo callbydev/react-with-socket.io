@@ -8,25 +8,25 @@
   padding: 0 20px;
 }
 
-.navbar .logo {
+.logo {
   font-weight: bold;
   font-size: 20px;
 }
 
-.navbar .icons {
+.icons {
   display: flex;
   align-items: center;
 }
-.navbar .icons .airplane {
+.airplane {
   transform: rotate(45deg);
   margin-left: 5px;
   margin-bottom: 5px;
 }
-.navbar .icons .heart-container {
+.heartContainer {
   display: inline-block;
   position: relative;
 }
-.navbar .icons .heart-container .noti {
+.noti {
   display: inline-block;
   position: absolute;
   width: 7px;
@@ -36,11 +36,11 @@
   right: 0;
   top: 0;
 }
-.navbar .icons .heart-container .heart {
+.heart {
   vertical-align: text-top;
 }
 
-.navbar .icons .heart-container .like-bubble {
+.likeBubble {
   display: flex;
   flex-direction: row;
   gap: 5px;
