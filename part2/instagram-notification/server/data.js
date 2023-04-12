@@ -1,7 +1,7 @@
 module.exports.posts = [
   {
     id: 1,
-    username: "",
+    userName: "",
     location: "Republic of Korea",
     userImg:
       "https://cdn.pixabay.com/photo/2017/02/16/23/10/smile-2072907_1280.jpg",
@@ -10,7 +10,7 @@ module.exports.posts = [
   },
   {
     id: 2,
-    username: "",
+    userName: "",
     location: "USA",
     userImg:
       "https://cdn.pixabay.com/photo/2018/02/21/08/40/woman-3169726_1280.jpg",
@@ -19,7 +19,7 @@ module.exports.posts = [
   },
   {
     id: 3,
-    username: "",
+    userName: "",
     location: "Japan",
     userImg:
       "https://cdn.pixabay.com/photo/2017/12/31/15/56/portrait-3052641_1280.jpg",
@@ -28,7 +28,7 @@ module.exports.posts = [
   },
   {
     id: 4,
-    username: "",
+    userName: "",
     location: "Italy",
     userImg:
       "https://cdn.pixabay.com/photo/2016/11/20/18/18/girl-1843477_1280.jpg",
@@ -37,7 +37,7 @@ module.exports.posts = [
   },
   {
     id: 5,
-    username: "",
+    userName: "",
     location: "Canada",
     userImg:
       "https://cdn.pixabay.com/photo/2017/04/01/21/06/portrait-2194457_1280.jpg",

@@ -13,34 +13,36 @@ const io = new Server("5000", {
 let users = [];
 
 // 4
-const addNewUser = (username, socketId) => {
-    !users.some((user) => user.username === username) &&
+const addNewUser = (userName, socketId) => {
+    !users.some((user) => user.userName === userName) &&
         users.unshift({
             ...posts[Math.floor(Math.random() * 5)],
-            username,
+            userName,
             socketId,
         });
 };
 
 // 5
-const getUser = (username) => {
-    return users.find((user) => user.username === username);
+const getUser = (userName) => {
+    return users.find((user) => user.userName === userName);
 };
 
 io.use((socket, next) => {
-    const username = socket.handshake.auth.username;
-    if (!username) {
+    const userName = socket.handshake.auth.userName;
+    if (!userName) {
         console.log("err");
-        return next(new Error("invalid username"));
+        return next(new Error("invalid userName"));
     }
-    socket.username = username;
+    socket.userName = userName;
     next();
 });
 
 io.on("connection", (socket) => {
     // 6
-    addNewUser(socket.username, socket.id);
-    io.sockets.emit("user-list", users);
+    addNewUser(socket.userName, socket.id);
+    socket.on('userList', () => {
+      io.sockets.emit("user-list", users);
+    })
 
     // 7
     socket.on("sendNotification", ({ senderName, receiverName, type }) => {

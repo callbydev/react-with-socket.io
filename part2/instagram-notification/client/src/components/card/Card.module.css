@@ -1,59 +1,63 @@
 .card {
-  height: 280px;
-  padding: 10px 0;
+    height: 280px;
+    padding: 10px 0;
 }
 
 .info {
-  display: flex;
-  align-items: center;
-  padding: 5px 20px;
-  justify-content: space-between;
-  font-weight: 500;
-  font-size: 14px;
+    display: flex;
+    align-items: center;
+    padding: 5px 20px;
+    justify-content: space-between;
+    font-weight: 500;
+    font-size: 14px;
+}
+.userInfo {
+    display: flex;
+    flex-direction: row;
 }
 
 .userName {
-  vertical-align: top;
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
 }
 
 .loc {
-  font-size: 12px;
+    font-size: 12px;
 }
 
 .userImg {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
 }
 
 .postImg {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
 }
 
 .icons {
-  display: flex;
-  align-items: center;
-  padding: 5px 20px;
-  position: relative;
+    display: flex;
+    align-items: center;
+    padding: 5px 20px;
+    position: relative;
 }
 
 .heart {
-  cursor: pointer;
+    cursor: pointer;
 }
 .fillHeart {
-  color: red;
-  cursor: pointer;
+    color: red;
+    cursor: pointer;
 }
 .airplane {
-  transform: rotate(45deg);
-  margin-left: 6px;
-  margin-bottom: 5px;
+    transform: rotate(45deg);
+    margin-left: 6px;
+    margin-bottom: 5px;
 }
 .msg {
-  margin-left: 5px;
+    margin-left: 5px;
 }
