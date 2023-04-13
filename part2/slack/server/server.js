@@ -6,35 +6,18 @@ const io = require("socket.io")(5000, {
 
 const userMap = new Map();
 
+io.use((socket, next) => {
+  const username = socket.handshake.auth.username;
+  if (!username) {
+      console.log("err");
+      return next(new Error("invalid username"));
+  }
+  socket.username = username;
+  next();
+});
 
 io.on("connection", (socket) => {
-  let _documentId = "";
-  socket.on("join", async (documentId) => {
-    _documentId = documentId;
-    socket.join(documentId);
-    socket.emit("initDocument", {
-      _document: document.data,
-      userList: userMap.get(documentId) || [],
-    });
-    const myId = Array.from(socket.rooms)[0];
-    setUserMap(_documentId, myId);
-    socket.broadcast.to(_documentId).emit("newUser", myId);
-  });
-
-  socket.on("save-document", async (data) => {
-    await Document.findByIdAndUpdate(_documentId, { data });
-  });
-
-  socket.on("send-changes", (delta) => {
-    socket.broadcast.to(_documentId).emit("receive-changes", delta);
-  });
-
-  socket.on("cursor-changes", (range) => {
-    const myRooms = Array.from(socket.rooms);
-    socket.broadcast
-      .to(_documentId)
-      .emit("receive-cursor", { range: range, id: myRooms[0] });
-  });
+  
 
   socket.on("disconnect", () => {
     console.log("disconnect...");
