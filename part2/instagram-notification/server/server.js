@@ -26,7 +26,7 @@ const addNewUser = (userName, socketId) => {
 const getUser = (userName) => {
     return users.find((user) => user.userName === userName);
 };
-
+// 6
 io.use((socket, next) => {
     const userName = socket.handshake.auth.userName;
     if (!userName) {
@@ -38,13 +38,15 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
-    // 6
+    // 7
     addNewUser(socket.userName, socket.id);
+
+    // 8
     socket.on('userList', () => {
       io.sockets.emit("user-list", users);
     })
 
-    // 7
+    // 9
     socket.on("sendNotification", ({ senderName, receiverName, type }) => {
         const receiver = getUser(receiverName);
         io.to(receiver.socketId).emit("getNotification", {

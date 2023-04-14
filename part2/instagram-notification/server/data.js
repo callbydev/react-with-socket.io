@@ -1,6 +1,8 @@
+// 1
 module.exports.posts = [
   {
     id: 1,
+    // 2
     userName: "",
     location: "Republic of Korea",
     userImg:
