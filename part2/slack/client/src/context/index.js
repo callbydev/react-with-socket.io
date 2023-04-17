@@ -1,8 +1,9 @@
 import { createContext, useReducer } from "react";
-import { AUTH_INFO } from "./action";
+import { AUTH_INFO, USER_LIST } from "./action";
 
 const initialState = {
-    userName: "",
+    userId: "",
+    userList: [],
 };
 
 const Context = createContext({});
@@ -12,7 +13,12 @@ const reducer = (state = initialState, action) => {
         case AUTH_INFO:
             return {
                 ...state,
-                userName: action.payload,
+                userId: action.payload,
+            };
+        case USER_LIST:
+            return {
+                ...state,
+                userList: action.payload,
             };
         default:
             return state;
