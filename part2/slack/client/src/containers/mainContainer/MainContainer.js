@@ -8,14 +8,15 @@ import {
     mainContentCss,
 } from "./MainContainer.style";
 import { socket } from "../../socket";
-import { SideBar } from "../../components";
+import { SideBar, ChatRoom } from "../../components";
+import { USER_LIST } from "../../context/action";
 import { Context } from "../../context";
 
 const MainContainer = () => {
     const {
         state: { userId },
+        dispatch,
     } = useContext(Context);
-    const [userList, setUserList] = useState([]);
     useEffect(() => {
         return () => {
             socket.disconnect();
@@ -23,7 +24,10 @@ const MainContainer = () => {
     }, []);
     useEffect(() => {
         function setUserListHandler(data) {
-            setUserList(data);
+            dispatch({
+                type: USER_LIST,
+                payload: data,
+            });
         }
         socket.on("user-list", setUserListHandler);
         return () => {
@@ -42,7 +46,8 @@ const MainContainer = () => {
                     <div className="user">{userId}</div>
                 </header>
                 <article css={mainContentCss}>
-                    <SideBar userList={userList} />
+                    <SideBar />
+                    <ChatRoom />
                 </article>
             </div>
         </div>

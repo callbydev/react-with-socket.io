@@ -7,7 +7,7 @@ export const userCss = css`
     align-items: center;
     color: #cecece;
     font-size: 14px;
-    padding: 10px 20px;
+    padding: 7px 20px;
     cursor: pointer;
 
     &:hover {

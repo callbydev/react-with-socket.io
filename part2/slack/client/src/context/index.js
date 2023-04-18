@@ -1,9 +1,12 @@
 import { createContext, useReducer } from "react";
-import { AUTH_INFO, USER_LIST } from "./action";
+import { AUTH_INFO, USER_LIST, CURRENT_CHAT } from "./action";
 
 const initialState = {
     userId: "",
     userList: [],
+    currentChat: {
+        targetId: [],
+    },
 };
 
 const Context = createContext({});
@@ -19,6 +22,11 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 userList: action.payload,
+            };
+        case CURRENT_CHAT:
+            return {
+                ...state,
+                currentChat: action.payload,
             };
         default:
             return state;

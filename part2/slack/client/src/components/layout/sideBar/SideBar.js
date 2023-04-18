@@ -1,20 +1,41 @@
 import React, { useState, useContext, useEffect } from "react";
 import { css } from "@emotion/react";
 import { Context } from "../../../context";
-import { navBarWrapCss, titleCss, userListCss } from "./SideBar.style";
+import { CURRENT_CHAT } from "../../../context/action";
+import {
+    navBarWrapCss,
+    titleCss,
+    userListCss,
+    directMsgCss,
+} from "./SideBar.style";
 import { User } from "../../index";
+import { BiChevronDown } from "react-icons/bi";
 
-const SideBar = ({ userList }) => {
+const SideBar = () => {
     const {
-        state: {},
+        state: { userList, currentChat },
+        dispatch,
     } = useContext(Context);
-    console.log(userList);
+    const onUserClickHandler = (e) => {
+        const { id } = e.target.dataset;
+        dispatch({
+            type: CURRENT_CHAT,
+            payload: { targetId: [id] },
+        });
+    };
     return (
         <nav css={navBarWrapCss}>
             <div css={titleCss}> Slack</div>
             <ul css={userListCss}>
+                <li css={directMsgCss}>
+                    <BiChevronDown size="20" /> Direct Messages +
+                </li>
                 {userList.map((v) => (
-                    <User id={v.userId} status={v.status} />
+                    <User
+                        id={v.userId}
+                        status={v.status}
+                        onClick={onUserClickHandler}
+                    />
                 ))}
             </ul>
         </nav>
