@@ -2,10 +2,11 @@ import { createContext, useReducer } from "react";
 import { AUTH_INFO, USER_LIST, CURRENT_CHAT } from "./action";
 
 const initialState = {
-    userId: "",
+    loginInfo: {},
     userList: [],
     currentChat: {
         targetId: [],
+        roomNumber: ''
     },
 };
 
@@ -16,7 +17,7 @@ const reducer = (state = initialState, action) => {
         case AUTH_INFO:
             return {
                 ...state,
-                userId: action.payload,
+                loginInfo: action.payload,
             };
         case USER_LIST:
             return {

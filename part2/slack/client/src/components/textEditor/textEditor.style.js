@@ -13,12 +13,12 @@ export const containerCss = css`
     .ql-container.ql-snow {
         border: none;
         display: flex;
-        width: calc(100% - 30px);
     }
     .ql-container .ql-editor {
         width: 100%;
     }
     .ql-toolbar.ql-snow {
+        width: calc(100% - 30px);
         border-top-left-radius: 15px;
         border-top-right-radius: 15px;
         display: flex;
@@ -31,7 +31,7 @@ export const containerCss = css`
 export const sendCss = css`
     position: absolute;
     right: 30px;
-    bottom: 30px;
+    top: 30px;
     height: 25px;
     width: 25px;
     color: #29ac76;

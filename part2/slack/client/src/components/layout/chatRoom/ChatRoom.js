@@ -6,8 +6,10 @@ import {
     subTitleCss,
     chatBoxCss,
     textBoxCss,
+    chatCss,
 } from "./ChatRoom.style";
 import { TextEditor } from "../../index";
+import { socket } from "../../../socket";
 
 const ChatRoom = () => {
     const {
@@ -15,7 +17,12 @@ const ChatRoom = () => {
     } = useContext(Context);
     const reactQuillRef = useRef(null);
     const [text, setText] = useState("");
-    const onChange = () => {};
+    const onMsgSendHandler = () => {
+        socket.emit("sendMsg", {
+            msg: text,
+            roomNumber: currentChat.roomNumber,
+        });
+    };
     return (
         <article css={chatRoomWrapCss}>
             <div css={subTitleCss}>
@@ -24,8 +31,64 @@ const ChatRoom = () => {
                     <span className="user">{v}</span>
                 ))}
             </div>
-            <ul css={chatBoxCss}></ul>
+            <ul css={chatBoxCss}>
+                <li css={chatCss}>
+                    <div className="userBox">
+                        <span className="user">Kyle</span>
+                        <span className="date">12:21PM</span>
+                    </div>
+                    <div className="textBox">
+                        asdsadaasda asdsadaasdass sdsda sssss
+                    </div>
+                </li>
+                <li css={chatCss}>
+                    <div className="userBox">
+                        <span className="user">Kyle</span>
+                        <span className="date">12:21PM</span>
+                    </div>
+                    <div className="textBox">
+                        asdsadaasda asdsadaasdass sdsda sssss
+                    </div>
+                </li>
+                <li css={chatCss}>
+                    <div className="userBox">
+                        <span className="user">Kyle</span>
+                        <span className="date">12:21PM</span>
+                    </div>
+                    <div className="textBox">
+                        asdsadaasda asdsadaasdass sdsda sssss
+                    </div>
+                </li>
+                <li css={chatCss}>
+                    <div className="userBox">
+                        <span className="user">Kyle</span>
+                        <span className="date">12:21PM</span>
+                    </div>
+                    <div className="textBox">
+                        asdsadaasda asdsadaasdass sdsda sssss
+                    </div>
+                </li>
+                <li css={chatCss}>
+                    <div className="userBox">
+                        <span className="user">Kyle</span>
+                        <span className="date">12:21PM</span>
+                    </div>
+                    <div className="textBox">
+                        asdsadaasda asdsadaasdass sdsda sssss
+                    </div>
+                </li>
+                <li css={chatCss}>
+                    <div className="userBox">
+                        <span className="user">Kyle</span>
+                        <span className="date">12:21PM</span>
+                    </div>
+                    <div className="textBox">
+                        asdsadaasda asdsadaasdass sdsda sssss
+                    </div>
+                </li>
+            </ul>
             <TextEditor
+                onSendHandler={onMsgSendHandler}
                 text={text}
                 reactQuillRef={reactQuillRef}
                 onChangeTextHandler={setText}

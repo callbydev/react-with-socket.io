@@ -17,9 +17,9 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
-    setUserMap(socket.userId);
-    console.log(userMap);
+    setUserMap(socket.userId, socket.id);
     io.sockets.emit("user-list", mapToArray(userMap));
+    console.log(userMap);
 
     socket.on("disconnect", () => {
         setStatus(socket.userId);
@@ -34,10 +34,15 @@ function mapToArray(userMap) {
     }));
 }
 
-function setStatus(socketId) {
-    userMap.set(socketId, { ...userMap.get(socketId), status: false });
+function setUserMap(userId, socketId) {
+    userMap.set(userId, {
+        ...userMap.get(socketId),
+        status: true,
+        userId,
+        socketId,
+    });
 }
 
-function setUserMap(userId) {
-    userMap.set(userId, { userId: userId, status: true });
+function setStatus(userId) {
+    userMap.set(userId, { ...userMap.get(userId), status: false });
 }

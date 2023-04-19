@@ -17,10 +17,10 @@ const SideBar = () => {
         dispatch,
     } = useContext(Context);
     const onUserClickHandler = (e) => {
-        const { id } = e.target.dataset;
+        const { id, socketId } = e.target.dataset;
         dispatch({
             type: CURRENT_CHAT,
-            payload: { targetId: [id] },
+            payload: { targetId: [id], roomNumber: socketId },
         });
     };
     return (
@@ -34,6 +34,7 @@ const SideBar = () => {
                     <User
                         id={v.userId}
                         status={v.status}
+                        socketId={v.socketId}
                         onClick={onUserClickHandler}
                     />
                 ))}

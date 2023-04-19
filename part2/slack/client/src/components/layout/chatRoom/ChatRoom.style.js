@@ -35,9 +35,33 @@ export const chatBoxCss = css`
     display: flex;
     flex-direction: column;
     margin: 0;
-    padding: 0;
+    padding: 20px;
     flex: 1 1 auto;
     overflow: scroll;
+    height: 500px;
+    gap: 10px;
 `;
-export const textBoxCss = css`
+export const chatCss = css`
+    display: flex;
+    flex-direction: column;
+    padding-left: 10px;
+
+    .userBox {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+
+        .user {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .date {
+            color: grey;
+            font-size: 10px;
+        }
+    }
+    .textBox {
+    }
 `;
+export const textBoxCss = css``;

@@ -24,6 +24,7 @@ const MainContainer = () => {
     }, []);
     useEffect(() => {
         function setUserListHandler(data) {
+            console.log(data);
             dispatch({
                 type: USER_LIST,
                 payload: data,

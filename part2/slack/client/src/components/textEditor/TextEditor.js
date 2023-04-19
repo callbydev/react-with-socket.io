@@ -15,10 +15,15 @@ const modules = {
     },
 };
 
-const TextEditor = ({ text, onChangeTextHandler, reactQuillRef }) => {
+const TextEditor = ({
+    text,
+    onChangeTextHandler,
+    reactQuillRef,
+    onSendHandler,
+}) => {
     return (
         <div css={containerCss}>
-            <HiPaperAirplane css={sendCss} />
+            <HiPaperAirplane css={sendCss} onClick={onSendHandler} />
             <ReactQuill
                 theme="snow"
                 modules={modules}
