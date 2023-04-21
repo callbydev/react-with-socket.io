@@ -9,15 +9,24 @@ import {
 } from "./MainContainer.style";
 import { socket } from "../../socket";
 import { SideBar, ChatRoom } from "../../components";
-import { USER_LIST } from "../../context/action";
+import { USER_LIST, AUTH_INFO } from "../../context/action";
 import { Context } from "../../context";
 
 const MainContainer = () => {
     const {
-        state: { userId },
+        state: { loginInfo, currentChat },
         dispatch,
     } = useContext(Context);
     useEffect(() => {
+        socket.on("connect", () => {
+            dispatch({
+                type: AUTH_INFO,
+                payload: {
+                    userId: socket.auth.userId,
+                    socketId: socket.id,
+                },
+            });
+        });
         return () => {
             socket.disconnect();
         };
@@ -44,7 +53,7 @@ const MainContainer = () => {
                         <li className="orange"></li>
                         <li className="green"></li>
                     </ul>
-                    <div className="user">{userId}</div>
+                    <div className="user">{loginInfo.userId}</div>
                 </header>
                 <article css={mainContentCss}>
                     <SideBar />

@@ -5,6 +5,7 @@ const io = require("socket.io")(5000, {
 });
 
 const userMap = new Map();
+const msgMap = new Map();
 
 io.use((socket, next) => {
     const userId = socket.handshake.auth.userId;
@@ -19,7 +20,12 @@ io.use((socket, next) => {
 io.on("connection", (socket) => {
     setUserMap(socket.userId, socket.id);
     io.sockets.emit("user-list", mapToArray(userMap));
-    console.log(userMap);
+
+    socket.on("sendMsg", (res) => {
+        const { msg, roomNumber, sender } = res;
+        setMsgMap(roomNumber, res);
+        io.sockets.to(roomNumber).emit("get-msg", { msg: msg, sender });
+    });
 
     socket.on("disconnect", () => {
         setStatus(socket.userId);
@@ -41,6 +47,26 @@ function setUserMap(userId, socketId) {
         userId,
         socketId,
     });
+}
+
+function setMsgMap(roomNumber, res) {
+    msgMap.has(roomNumber)
+        ? msgMap.set(roomNumber, [
+              ...msgMap.get(roomNumber),
+              {
+                  msg: res.msg,
+                  to: res.roomNumber,
+                  from: res.sender,
+              },
+          ])
+        : msgMap.set(roomNumber, [
+              {
+                  msg: res.msg,
+                  to: res.roomNumber,
+                  from: res.sender,
+              },
+          ]);
+    console.log(msgMap);
 }
 
 function setStatus(userId) {

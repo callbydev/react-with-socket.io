@@ -13,15 +13,42 @@ import { socket } from "../../../socket";
 
 const ChatRoom = () => {
     const {
-        state: { currentChat },
+        state: { currentChat, loginInfo },
     } = useContext(Context);
     const reactQuillRef = useRef(null);
     const [text, setText] = useState("");
+    const [msgList, setMsgList] = useState([]);
+    useEffect(() => {
+        function setMsgListHandler(data) {
+            console.log(data);
+        }
+        socket.on("get-msg", setMsgListHandler);
+        return () => {
+            socket.off("get-msg", setMsgListHandler);
+        };
+    }, []);
+    useEffect(() => {
+        console.log(currentChat.roomNumber);
+        return () => {
+            setMsgList([]);
+        };
+    }, [currentChat.roomNumber]);
     const onMsgSendHandler = () => {
+        const msg = reactQuillRef.current.unprivilegedEditor.getText();
+        setMsgList((prev) => [
+            ...prev,
+            {
+                msg: msg,
+                userId: loginInfo.userId,
+                socketId: loginInfo.socketId,
+            },
+        ]);
         socket.emit("sendMsg", {
-            msg: text,
+            msg: msg,
             roomNumber: currentChat.roomNumber,
+            sender: loginInfo.socketId,
         });
+        setText("");
     };
     return (
         <article css={chatRoomWrapCss}>
@@ -32,60 +59,15 @@ const ChatRoom = () => {
                 ))}
             </div>
             <ul css={chatBoxCss}>
-                <li css={chatCss}>
-                    <div className="userBox">
-                        <span className="user">Kyle</span>
-                        <span className="date">12:21PM</span>
-                    </div>
-                    <div className="textBox">
-                        asdsadaasda asdsadaasdass sdsda sssss
-                    </div>
-                </li>
-                <li css={chatCss}>
-                    <div className="userBox">
-                        <span className="user">Kyle</span>
-                        <span className="date">12:21PM</span>
-                    </div>
-                    <div className="textBox">
-                        asdsadaasda asdsadaasdass sdsda sssss
-                    </div>
-                </li>
-                <li css={chatCss}>
-                    <div className="userBox">
-                        <span className="user">Kyle</span>
-                        <span className="date">12:21PM</span>
-                    </div>
-                    <div className="textBox">
-                        asdsadaasda asdsadaasdass sdsda sssss
-                    </div>
-                </li>
-                <li css={chatCss}>
-                    <div className="userBox">
-                        <span className="user">Kyle</span>
-                        <span className="date">12:21PM</span>
-                    </div>
-                    <div className="textBox">
-                        asdsadaasda asdsadaasdass sdsda sssss
-                    </div>
-                </li>
-                <li css={chatCss}>
-                    <div className="userBox">
-                        <span className="user">Kyle</span>
-                        <span className="date">12:21PM</span>
-                    </div>
-                    <div className="textBox">
-                        asdsadaasda asdsadaasdass sdsda sssss
-                    </div>
-                </li>
-                <li css={chatCss}>
-                    <div className="userBox">
-                        <span className="user">Kyle</span>
-                        <span className="date">12:21PM</span>
-                    </div>
-                    <div className="textBox">
-                        asdsadaasda asdsadaasdass sdsda sssss
-                    </div>
-                </li>
+                {msgList.map((v) => (
+                    <li css={chatCss}>
+                        <div className="userBox">
+                            <span className="user">{v.userId}</span>
+                            <span className="date">12:21PM</span>
+                        </div>
+                        <div className="textBox">{v.msg}</div>
+                    </li>
+                ))}
             </ul>
             <TextEditor
                 onSendHandler={onMsgSendHandler}

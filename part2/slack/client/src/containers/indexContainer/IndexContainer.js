@@ -29,13 +29,6 @@ const IndexContainer = () => {
         e.preventDefault();
         socket.auth = { userId: user };
         socket.connect();
-        dispatch({
-            type: AUTH_INFO,
-            payload: {
-                userId: user,
-                socketId: socket.id,
-            },
-        });
         navigate("/main");
     };
     const onUserNameHandler = (e) => {

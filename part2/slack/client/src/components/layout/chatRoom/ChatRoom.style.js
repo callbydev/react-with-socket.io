@@ -38,7 +38,7 @@ export const chatBoxCss = css`
     padding: 20px;
     flex: 1 1 auto;
     overflow: scroll;
-    height: 500px;
+    height: 400px;
     gap: 10px;
 `;
 export const chatCss = css`

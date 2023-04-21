@@ -9,7 +9,6 @@ const modules = {
         containers: [
             [{ list: "ordered" }, { list: "bullet" }],
             ["bold", "italic", "underline", "strike"],
-            [{ color: [] }, { background: [] }],
             [{ script: "sub" }, { script: "super" }],
         ],
     },
