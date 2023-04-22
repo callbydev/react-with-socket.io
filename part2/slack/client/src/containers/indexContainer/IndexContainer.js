@@ -27,10 +27,6 @@ const IndexContainer = () => {
     }, []);
     const onLoginHandler = (e) => {
         e.preventDefault();
-        dispatch({
-            type: AUTH_INFO,
-            payload: user,
-        });
         socket.auth = { userId: user };
         socket.connect();
         navigate("/main");

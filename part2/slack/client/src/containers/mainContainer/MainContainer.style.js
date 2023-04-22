@@ -10,7 +10,7 @@ export const mainContainerCss = css`
 export const slackMainCss = css`
     display: flex;
     flex-direction: column;
-    height: 60vh;
+    /* height: 60vh; */
     width: 100%;
     max-width: 1000px;
     border: 1px solid #4a154b;
@@ -21,8 +21,7 @@ export const slackHeaderCss = css`
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
-    height: 30px;
+    padding: 15px 20px;
     width: calc(100% - 40px);
     background-color: #340e36;
 
