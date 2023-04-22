@@ -1,16 +1,19 @@
 const { Server } = require("socket.io");
 const { seats } = require("./data");
 
+// 1
 const io = new Server("5000", {
     cors: {
         origin: "http://localhost:3000",
     },
 });
 
+// 2
 let avatar = [...seats];
 let antman = [...seats];
 let cats = [...seats];
 
+// 3
 const setSeats = (roomNumber, seat) => {
     let temp = [];
     function setStatus(seats) {
@@ -35,6 +38,7 @@ const setSeats = (roomNumber, seat) => {
     return temp;
 };
 io.on("connection", (socket) => {
+    // 4
     socket.on("join", (movie) => {
         socket.join(movie);
         let tempSeat = [];
@@ -48,6 +52,7 @@ io.on("connection", (socket) => {
         io.sockets.in(movie).emit("sSeatMessage", tempSeat);
     });
 
+    // 5
     socket.on("addSeat", (seat) => {
         const myRooms = Array.from(socket.rooms);
         io.sockets

@@ -1,6 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { HomeContainer, SeatContainer } from "./containers";
-import "./App.css";
 
 function App() {
   return (
