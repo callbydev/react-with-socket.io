@@ -7,11 +7,13 @@ import { socket } from "../../socket";
 const cx = classNames.bind(styles);
 
 const SeatContainer = () => {
+    // 1
     const { id, title } = useParams();
     const [booked, setBooked] = useState("");
     const [seats, setSeats] = useState([]);
     const [isDisabled, setIsDisabled] = useState(false);
 
+    // 2
     useEffect(() => {
         socket.emit("join", id);
         return () => {
@@ -19,6 +21,7 @@ const SeatContainer = () => {
         };
     }, []);
 
+    // 3
     useEffect(() => {
         function setSeat(data) {
             setSeats(data);
@@ -29,6 +32,7 @@ const SeatContainer = () => {
         };
     }, []);
 
+    // 4
     const onClickHandler = (e) => {
         if (isDisabled) return;
         const { id, status } = e.target.dataset;
@@ -48,6 +52,7 @@ const SeatContainer = () => {
         setSeats(tempSeats);
     };
 
+    // 5
     const onConfirmHandler = () => {
         if (!booked) return;
         socket.emit("addSeat", booked);
@@ -58,6 +63,7 @@ const SeatContainer = () => {
             <h2 className={cx("title")}>{title}</h2>
             <div className={cx("screen")}>screen</div>
             <ul className={cx("wrap_seats")}>
+                // 7
                 {seats.map((v) => {
                     return v.map((i, idx) => (
                         <li

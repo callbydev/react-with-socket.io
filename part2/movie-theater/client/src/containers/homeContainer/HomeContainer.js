@@ -7,6 +7,7 @@ import cat from "../../images/cat.png";
 import { socket } from "../../socket";
 import { Link } from "react-router-dom";
 
+// 1
 const cx = classNames.bind(styles);
 
 const HomeContainer = () => {
