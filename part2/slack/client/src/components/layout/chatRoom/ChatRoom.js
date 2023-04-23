@@ -26,7 +26,7 @@ const ChatRoom = () => {
       setMsgList(
         data.msg.map((m) => ({
           msg: m.msg,
-          userId: m.fromId,
+          userId: m.fromUserId,
         }))
       );
     }
@@ -37,7 +37,19 @@ const ChatRoom = () => {
   }, [currentChat.targetId]);
   useEffect(() => {
     function setPrivateMsgListHandler(data) {
-      console.log(data);
+      const { msg, fromUserId, toUserId } = data;
+      if (
+        currentChat.roomNumber === `${fromUserId}-${toUserId}` ||
+        currentChat.roomNumber === `${toUserId}-${fromUserId}`
+      ) {
+        setMsgList((prev) => [
+          ...prev,
+          {
+            msg: msg,
+            userId: fromUserId,
+          },
+        ]);
+      }
     }
     socket.on("private-msg", setPrivateMsgListHandler);
     return () => {
@@ -56,12 +68,13 @@ const ChatRoom = () => {
       {
         msg: msg,
         userId: loginInfo.userId,
-        socketId: loginInfo.socketId,
       },
     ]);
     socket.emit("privateMsg", {
       msg: msg,
       toUserId: currentChat.targetId[0],
+      toUserSocketId: currentChat.targetSocketId,
+      fromUserId: loginInfo.userId,
     });
     setText("");
   };
@@ -74,8 +87,8 @@ const ChatRoom = () => {
         ))}
       </div>
       <ul css={chatBoxCss}>
-        {msgList.map((v) => (
-          <li css={chatCss}>
+        {msgList.map((v, i) => (
+          <li css={chatCss} key={`${i}-chat`}>
             <div className="userBox">
               <span className="user">{v.userId}</span>
               <span className="date">12:21PM</span>

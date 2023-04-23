@@ -5,35 +5,35 @@ import "react-quill/dist/quill.snow.css";
 import { HiPaperAirplane } from "react-icons/hi2";
 
 const modules = {
-    toolbar: {
-        containers: [
-            [{ list: "ordered" }, { list: "bullet" }],
-            ["bold", "italic", "underline", "strike"],
-            [{ script: "sub" }, { script: "super" }],
-        ],
-    },
+  toolbar: {
+    containers: [
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["bold", "italic", "underline", "strike"],
+      [{ script: "sub" }, { script: "super" }],
+    ],
+  },
 };
 
 const TextEditor = ({
-    text,
-    onChangeTextHandler,
-    reactQuillRef,
-    onSendHandler,
+  text,
+  onChangeTextHandler,
+  reactQuillRef,
+  onSendHandler,
 }) => {
-    return (
-        <div css={containerCss}>
-            <HiPaperAirplane css={sendCss} onClick={onSendHandler} />
-            <ReactQuill
-                theme="snow"
-                modules={modules}
-                value={text}
-                onChange={onChangeTextHandler}
-                ref={(el) => {
-                    reactQuillRef.current = el;
-                }}
-            ></ReactQuill>
-        </div>
-    );
+  return (
+    <div css={containerCss}>
+      <HiPaperAirplane css={sendCss} onClick={onSendHandler} />
+      <ReactQuill
+        theme="snow"
+        modules={modules}
+        value={text}
+        onChange={onChangeTextHandler}
+        ref={(el) => {
+          reactQuillRef.current = el;
+        }}
+      ></ReactQuill>
+    </div>
+  );
 };
 
 export default TextEditor;

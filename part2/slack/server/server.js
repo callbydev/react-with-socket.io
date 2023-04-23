@@ -23,7 +23,7 @@ io.on("connection", (socket) => {
   io.sockets.emit("user-list", mapToArray(userMap));
 
   socket.on("privateMsg", (res) => {
-    const { msg, toUserId } = res;
+    const { msg, toUserId, toUserSocketId } = res;
     let privateRoom = getRoomNumber(toUserId, socket.userId);
     if (!privateRoom) {
       privateRoom = `${toUserId}-${socket.userId}`;
@@ -36,6 +36,19 @@ io.on("connection", (socket) => {
       toUserId: toUserId,
       fromUserId: socket.userId,
     });
+  });
+  socket.on("reqJoinRoom", (res) => {
+    const { joinRoomNumber, targetSocketId } = res;
+    socket.join(joinRoomNumber);
+    console.log("req", socket.userId, socket.rooms);
+    io.sockets
+      .to(targetSocketId)
+      .emit("msg-alert", { roomNumber: joinRoomNumber });
+  });
+  socket.on("resJoinRoom", (res) => {
+    console.log("res", res);
+    socket.join(res);
+    console.log("socket room", socket.userId, socket.rooms);
   });
   socket.on("msgInit", (res) => {
     const { userId } = res;
@@ -83,13 +96,15 @@ function setPrivateMsgMap(roomNumber, res) {
         ...privateMsgMap.get(roomNumber),
         {
           msg: res.msg,
-          to: res.toUserId,
+          toUserId: res.toUserId,
+          fromUserId: res.fromUserId,
         },
       ])
     : privateMsgMap.set(roomNumber, [
         {
           msg: res.msg,
-          to: res.toUserId,
+          toUserId: res.toUserId,
+          fromUserId: res.fromUserId,
         },
       ]);
   console.log(privateMsgMap);
