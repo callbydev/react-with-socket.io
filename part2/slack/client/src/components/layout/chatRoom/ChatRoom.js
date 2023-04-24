@@ -19,23 +19,6 @@ const ChatRoom = () => {
   const [text, setText] = useState("");
   const [msgList, setMsgList] = useState([]);
   useEffect(() => {
-    socket.emit("msgInit", {
-      userId: currentChat.targetId[0],
-    });
-    function setMsgListInit(data) {
-      setMsgList(
-        data.msg.map((m) => ({
-          msg: m.msg,
-          userId: m.fromUserId,
-        }))
-      );
-    }
-    socket.on("msg-init", setMsgListInit);
-    return () => {
-      socket.off("msg-init", setMsgListInit);
-    };
-  }, [currentChat.targetId]);
-  useEffect(() => {
     function setPrivateMsgListHandler(data) {
       const { msg, fromUserId, toUserId } = data;
       if (
@@ -54,6 +37,20 @@ const ChatRoom = () => {
     socket.on("private-msg", setPrivateMsgListHandler);
     return () => {
       socket.off("private-msg", setPrivateMsgListHandler);
+    };
+  }, [currentChat.roomNumber]);
+  useEffect(() => {
+    function setMsgListInit(data) {
+      setMsgList(
+        data.msg.map((m) => ({
+          msg: m.msg,
+          userId: m.fromUserId,
+        }))
+      );
+    }
+    socket.on("msg-init", setMsgListInit);
+    return () => {
+      socket.off("msg-init", setMsgListInit);
     };
   }, []);
   useEffect(() => {

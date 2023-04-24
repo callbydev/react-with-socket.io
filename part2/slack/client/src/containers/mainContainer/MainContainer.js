@@ -14,7 +14,7 @@ import { Context } from "../../context";
 
 const MainContainer = () => {
   const {
-    state: { loginInfo, currentChat },
+    state: { loginInfo },
     dispatch,
   } = useContext(Context);
   useEffect(() => {

@@ -14,17 +14,21 @@ import { socket } from "../../../socket";
 
 const SideBar = () => {
   const {
-    state: { userList, loginInfo },
+    state: { userList, loginInfo, currentChat },
     dispatch,
   } = useContext(Context);
   useEffect(() => {
-    function setMsgListInit(data) {
-      console.log(data.roomNumber);
+    socket.emit("msgInit", {
+      userId: currentChat.targetId[0],
+    });
+  }, [currentChat.targetId]);
+  useEffect(() => {
+    function setMsgAlert(data) {
       socket.emit("resJoinRoom", data.roomNumber);
     }
-    socket.on("msg-alert", setMsgListInit);
+    socket.on("msg-alert", setMsgAlert);
     return () => {
-      socket.off("msg-alert", setMsgListInit);
+      socket.off("msg-alert", setMsgAlert);
     };
   }, []);
   const onUserClickHandler = (e) => {
@@ -37,9 +41,8 @@ const SideBar = () => {
         targetSocketId: e.target.dataset.socket,
       },
     });
-    console.log(`${loginInfo.userId}-${id}`, e.target.dataset.socket);
     socket.emit("reqJoinRoom", {
-      joinRoomNumber: `${loginInfo.userId}-${id}`,
+      targetId: id,
       targetSocketId: e.target.dataset.socket,
     });
   };

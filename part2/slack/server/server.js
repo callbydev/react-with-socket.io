@@ -28,7 +28,7 @@ io.on("connection", (socket) => {
     if (!privateRoom) {
       privateRoom = `${toUserId}-${socket.userId}`;
       rooms.push(privateRoom);
-      socket.join(privateRoom);
+      // socket.join(privateRoom);
     }
     setPrivateMsgMap(privateRoom, res);
     socket.broadcast.in(privateRoom).emit("private-msg", {
@@ -38,22 +38,25 @@ io.on("connection", (socket) => {
     });
   });
   socket.on("reqJoinRoom", (res) => {
-    const { joinRoomNumber, targetSocketId } = res;
-    socket.join(joinRoomNumber);
-    console.log("req", socket.userId, socket.rooms);
-    io.sockets
-      .to(targetSocketId)
-      .emit("msg-alert", { roomNumber: joinRoomNumber });
+    const { targetId, targetSocketId } = res;
+    let roomName = getRoomNumber(targetId, socket.userId);
+    if (!roomName) {
+      roomName = `${targetId}-${socket.userId}`;
+    }
+    io.sockets.to(targetSocketId).emit("msg-alert", { roomNumber: roomName });
   });
   socket.on("resJoinRoom", (res) => {
-    console.log("res", res);
     socket.join(res);
-    console.log("socket room", socket.userId, socket.rooms);
   });
   socket.on("msgInit", (res) => {
     const { userId } = res;
-    const roomName = getRoomNumber(userId, socket.userId);
-    io.sockets.emit("msg-init", { msg: privateMsgMap.get(roomName) || [] });
+    let roomName = getRoomNumber(userId, socket.userId);
+    if (!roomName) {
+      roomName = `${userId}-${socket.userId}`;
+    }
+    io.sockets
+      .to(roomName)
+      .emit("msg-init", { msg: privateMsgMap.get(roomName) || [] });
   });
 
   socket.on("disconnect", () => {
