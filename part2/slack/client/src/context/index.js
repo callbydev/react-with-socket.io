@@ -1,5 +1,5 @@
 import { createContext, useReducer } from "react";
-import { AUTH_INFO, USER_LIST, CURRENT_CHAT } from "./action";
+import { AUTH_INFO, USER_LIST, CURRENT_CHAT, GROUP_CHAT } from "./action";
 
 const initialState = {
   loginInfo: {
@@ -10,7 +10,11 @@ const initialState = {
   currentChat: {
     targetId: [],
     roomNumber: "",
-    targetSocketId: ''
+    targetSocketId: "",
+  },
+  groupChat: {
+    textBarStatus: false,
+    groupChatNames: [],
   },
 };
 
@@ -32,6 +36,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         currentChat: action.payload,
+      };
+    case GROUP_CHAT:
+      return {
+        ...state,
+        groupChat: action.payload,
       };
     default:
       return state;

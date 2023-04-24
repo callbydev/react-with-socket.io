@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { css } from "@emotion/react";
 import { Context } from "../../../context";
-import { CURRENT_CHAT } from "../../../context/action";
+import { CURRENT_CHAT, GROUP_CHAT } from "../../../context/action";
 import {
   navBarWrapCss,
   titleCss,
@@ -22,6 +22,7 @@ const SideBar = () => {
       userId: currentChat.targetId[0],
     });
   }, [currentChat.targetId]);
+  console.log(currentChat);
   useEffect(() => {
     function setMsgAlert(data) {
       socket.emit("resJoinRoom", data.roomNumber);
@@ -45,12 +46,50 @@ const SideBar = () => {
       targetId: id,
       targetSocketId: e.target.dataset.socket,
     });
+    dispatch({
+      type: GROUP_CHAT,
+      payload: {
+        textBarStatus: false,
+        groupChatNames: [],
+      },
+    });
+  };
+  const onMakeGroupChat = () => {
+    dispatch({
+      type: GROUP_CHAT,
+      payload: {
+        textBarStatus: true,
+        groupChatNames: [],
+      },
+    });
+  };
+  const onGroupUserClickHandler = (e) => {
+    const { id } = e.target.dataset;
+    dispatch({
+      type: CURRENT_CHAT,
+      payload: {
+        targetId: [id],
+        roomNumber: id,
+        targetSocketId: e.target.dataset.socket,
+      },
+    });
+    socket.emit("reqGroupJoinRoom", {
+      targetId: id,
+      targetSocketId: e.target.dataset.socket,
+    });
+    dispatch({
+      type: GROUP_CHAT,
+      payload: {
+        textBarStatus: false,
+        groupChatNames: [],
+      },
+    });
   };
   return (
     <nav css={navBarWrapCss}>
       <div css={titleCss}> Slack</div>
       <ul css={userListCss}>
-        <li css={directMsgCss}>
+        <li css={directMsgCss} onClick={onMakeGroupChat}>
           <BiChevronDown size="20" /> Direct Messages +
         </li>
         {userList.map((v, i) => (
@@ -59,7 +98,12 @@ const SideBar = () => {
               id={v.userId}
               status={v.status}
               socket={v.socketId}
-              onClick={onUserClickHandler}
+              type={v.type}
+              onClick={
+                v.type === "group"
+                  ? onGroupUserClickHandler
+                  : onUserClickHandler
+              }
             />
           </li>
         ))}

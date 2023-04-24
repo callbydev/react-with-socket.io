@@ -22,6 +22,10 @@ io.on("connection", (socket) => {
   setUserMap(socket.userId, socket.id);
   io.sockets.emit("user-list", mapToArray(userMap));
 
+  socket.on("userListUpdate", (res) => {
+    
+  });
+
   socket.on("privateMsg", (res) => {
     const { msg, toUserId, toUserSocketId } = res;
     let privateRoom = getRoomNumber(toUserId, socket.userId);

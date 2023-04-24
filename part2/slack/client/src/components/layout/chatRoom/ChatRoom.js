@@ -6,18 +6,24 @@ import {
   subTitleCss,
   chatBoxCss,
   textBoxCss,
+  chatBoxGuidCss,
   chatCss,
 } from "./ChatRoom.style";
-import { TextEditor } from "../../index";
+import { TextEditor, GroupTextInput } from "../../index";
 import { socket } from "../../../socket";
+import { USER_LIST } from "../../../context/action";
+import logo from "../../../images/logo.png";
 
 const ChatRoom = () => {
   const {
-    state: { currentChat, loginInfo },
+    dispatch,
+    state: { currentChat, loginInfo, groupChat, userList },
   } = useContext(Context);
   const reactQuillRef = useRef(null);
   const [text, setText] = useState("");
+  const [groupUser, setGroupUser] = useState("");
   const [msgList, setMsgList] = useState([]);
+  const [groupChatUsers, setGroupChatUsers] = useState([]);
   useEffect(() => {
     function setPrivateMsgListHandler(data) {
       const { msg, fromUserId, toUserId } = data;
@@ -75,25 +81,68 @@ const ChatRoom = () => {
     });
     setText("");
   };
+  const onGroupSendHandler = (e) => {
+    e.preventDefault();
+    // if (!userList.includes(groupUser)) return;
+    setGroupChatUsers([...groupChatUsers, groupUser]);
+    setGroupUser("");
+  };
+  const onChangeGroupTextHandler = (e) => {
+    setGroupUser(e.target.value);
+  };
+  const groupChatUserCloseClick = (e) => {
+    const { id } = e.target.dataset;
+    setGroupChatUsers(groupChatUsers.filter((v) => v !== id));
+  };
+  const onJoinClick = () => {
+    if (groupChatUsers.length <= 0) return;
+    const user = {
+      socketId: groupChatUsers.join(","),
+      status: true,
+      userId: groupChatUsers.join(","),
+      type: "group",
+    };
+    dispatch({
+      type: USER_LIST,
+      payload: [...userList, user],
+    });
+    socket.emit("userListUpdate", user);
+    setGroupChatUsers([]);
+  };
   return (
     <article css={chatRoomWrapCss}>
       <div css={subTitleCss}>
-        {/* <span className={status ? "active" : "deactive"} /> */}
-        {currentChat.targetId.map((v) => (
-          <span className="user">{v}</span>
-        ))}
+        {groupChat.textBarStatus ? (
+          <GroupTextInput
+            groupText={groupUser}
+            onChangeGroupTextHandler={onChangeGroupTextHandler}
+            groupChatUserList={groupChatUsers}
+            onGroupSendHandler={onGroupSendHandler}
+            groupChatUserCloseClick={groupChatUserCloseClick}
+            onJoinClick={onJoinClick}
+          />
+        ) : (
+          currentChat.targetId.map((v) => <span className="user">{v}</span>)
+        )}
       </div>
-      <ul css={chatBoxCss}>
-        {msgList.map((v, i) => (
-          <li css={chatCss} key={`${i}-chat`}>
-            <div className="userBox">
-              <span className="user">{v.userId}</span>
-              <span className="date">12:21PM</span>
-            </div>
-            <div className="textBox">{v.msg}</div>
-          </li>
-        ))}
-      </ul>
+      {currentChat.roomNumber ? (
+        <ul css={chatBoxCss}>
+          {msgList.map((v, i) => (
+            <li css={chatCss} key={`${i}-chat`}>
+              <div className="userBox">
+                <span className="user">{v.userId}</span>
+                <span className="date">12:21PM</span>
+              </div>
+              <div className="textBox">{v.msg}</div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div css={chatBoxGuidCss}>
+          <img src={logo} width="100px" height="auto" alt="logo" />
+          <div className="guide">Please, Choose a conversation.</div>
+        </div>
+      )}
       {currentChat.roomNumber && (
         <TextEditor
           onSendHandler={onPrivateMsgSendHandler}

@@ -17,7 +17,6 @@ import logo from "../../images/logo.png";
 const IndexContainer = () => {
     const [user, setUser] = useState("");
     const navigate = useNavigate();
-    const { dispatch } = useContext(Context);
     useEffect(() => {
         socket.on("connect_error", (err) => {
             if (err.message === "invalid username") {
