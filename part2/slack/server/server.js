@@ -22,8 +22,12 @@ io.use((socket, next) => {
 
 io.on("connection", (socket) => {
   setUserMap(socket.userId, socket.id);
+  // setPersonalUserMap(socket.userId, socket.userId, socket.id);
   io.sockets.emit("user-list", mapToArray(userMap));
 
+  //setPersonalMap(socket.userId, mapToArray(userMap));
+
+  console.log(personalUserMap);
   socket.on("userListUpdate", (res) => {
     const { socketId } = res;
     socketId.split(",").forEach((v) => {
@@ -180,12 +184,17 @@ function setStatus(userId) {
   userMap.set(userId, { ...userMap.get(userId), status: false });
 }
 function setPersonalUserMap(userId, addedUserId, addedUserSocketId) {
+  const temp = personalUserMap.get(userId) || [];
   personalUserMap.set(userId, [
-    ...personalUserMap.get(userId),
+    ...temp,
     {
       status: true,
       userId: addedUserId,
       socketId: addedUserSocketId,
     },
   ]);
+}
+function setPersonalMap(userId, userlist) {
+  const temp = personalUserMap.get(userId) || [];
+  personalUserMap.set(userId, [...temp, ...userlist]);
 }
