@@ -46,6 +46,24 @@ const ChatRoom = () => {
     };
   }, [currentChat.roomNumber]);
   useEffect(() => {
+    function setGroupMsgListHandler(data) {
+      const { msg, toUserSocketId, fromUserId } = data;
+      if (currentChat.roomNumber === toUserSocketId) {
+        setMsgList((prev) => [
+          ...prev,
+          {
+            msg: msg,
+            userId: fromUserId,
+          },
+        ]);
+      }
+    }
+    socket.on("group-msg", setGroupMsgListHandler);
+    return () => {
+      socket.off("group-msg", setGroupMsgListHandler);
+    };
+  }, [currentChat.roomNumber]);
+  useEffect(() => {
     function setMsgListInit(data) {
       setMsgList(
         data.msg.map((m) => ({
@@ -109,6 +127,25 @@ const ChatRoom = () => {
     socket.emit("userListUpdate", user);
     setGroupChatUsers([]);
   };
+  const onGroupMsgSendHandler = () => {
+    console.log("group msg");
+    const msg = reactQuillRef.current.unprivilegedEditor.getText();
+    setMsgList((prev) => [
+      ...prev,
+      {
+        msg: msg,
+        userId: loginInfo.userId,
+      },
+    ]);
+    socket.emit("groupMsg", {
+      toUserId: currentChat.targetSocketId,
+      toUserSocketId: currentChat.targetSocketId,
+      fromUserId: loginInfo.userId,
+      msg: msg,
+    });
+    setText("");
+  };
+  console.log(currentChat.targetId.length);
   return (
     <article css={chatRoomWrapCss}>
       <div css={subTitleCss}>
@@ -145,7 +182,11 @@ const ChatRoom = () => {
       )}
       {currentChat.roomNumber && (
         <TextEditor
-          onSendHandler={onPrivateMsgSendHandler}
+          onSendHandler={
+            currentChat.targetId.length > 1
+              ? onGroupMsgSendHandler
+              : onPrivateMsgSendHandler
+          }
           text={text}
           reactQuillRef={reactQuillRef}
           onChangeTextHandler={setText}

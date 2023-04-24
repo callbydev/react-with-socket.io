@@ -18,8 +18,9 @@ const SideBar = () => {
     dispatch,
   } = useContext(Context);
   useEffect(() => {
+    console.log(currentChat.targetId[0]);
     socket.emit("msgInit", {
-      userId: currentChat.targetId[0],
+        targetId: currentChat.targetId,
     });
   }, [currentChat.targetId]);
   console.log(currentChat);
@@ -30,6 +31,15 @@ const SideBar = () => {
     socket.on("msg-alert", setMsgAlert);
     return () => {
       socket.off("msg-alert", setMsgAlert);
+    };
+  }, []);
+  useEffect(() => {
+    function setGroupChat(data) {
+      socket.emit("resGroupJoinRoom", data.roomNumber);
+    }
+    socket.on("group-chat-req", setGroupChat);
+    return () => {
+      socket.off("group-chat-req", setGroupChat);
     };
   }, []);
   const onUserClickHandler = (e) => {
@@ -68,15 +78,15 @@ const SideBar = () => {
     dispatch({
       type: CURRENT_CHAT,
       payload: {
-        targetId: [id],
+        targetId: [...id.split(",")],
         roomNumber: id,
         targetSocketId: e.target.dataset.socket,
       },
     });
-    socket.emit("reqGroupJoinRoom", {
-      targetId: id,
-      targetSocketId: e.target.dataset.socket,
-    });
+    // socket.emit("reqGroupJoinRoom", {
+    //   targetId: id,
+    //   targetSocketId: e.target.dataset.socket,
+    // });
     dispatch({
       type: GROUP_CHAT,
       payload: {

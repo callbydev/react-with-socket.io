@@ -6,7 +6,9 @@ const io = require("socket.io")(5000, {
 
 const rooms = [];
 const userMap = new Map();
+const personalUserMap = new Map();
 const privateMsgMap = new Map();
+const groupMsgMap = new Map();
 
 io.use((socket, next) => {
   const userId = socket.handshake.auth.userId;
@@ -23,7 +25,22 @@ io.on("connection", (socket) => {
   io.sockets.emit("user-list", mapToArray(userMap));
 
   socket.on("userListUpdate", (res) => {
-    
+    const { socketId } = res;
+    socketId.split(",").forEach((v) => {
+      io.sockets
+        .to(userMap.get(v).socketId)
+        .emit("group-chat-req", { roomNumber: socketId });
+    });
+  });
+  socket.on("groupMsg", (res) => {
+    const { msg, toUserSocketId, toUserId, fromUserId } = res;
+    setGroupeMsgMap(toUserSocketId, res);
+    socket.broadcast.in(toUserSocketId).emit("group-msg", {
+      msg: msg,
+      toUserId,
+      fromUserId,
+      toUserSocketId: toUserSocketId,
+    });
   });
 
   socket.on("privateMsg", (res) => {
@@ -41,6 +58,11 @@ io.on("connection", (socket) => {
       fromUserId: socket.userId,
     });
   });
+  socket.on("resGroupJoinRoom", (res) => {
+    socket.join(res);
+    setGroupUserMap(res, res);
+    io.sockets.to(res).emit("user-list", mapToArray(userMap));
+  });
   socket.on("reqJoinRoom", (res) => {
     const { targetId, targetSocketId } = res;
     let roomName = getRoomNumber(targetId, socket.userId);
@@ -53,14 +75,24 @@ io.on("connection", (socket) => {
     socket.join(res);
   });
   socket.on("msgInit", (res) => {
-    const { userId } = res;
-    let roomName = getRoomNumber(userId, socket.userId);
-    if (!roomName) {
-      roomName = `${userId}-${socket.userId}`;
+    const { targetId } = res;
+    let roomName = null;
+    if (targetId.length === 1) {
+      const userId = targetId[0];
+      roomName = getRoomNumber(userId, socket.userId);
+      if (!roomName) {
+        roomName = `${userId}-${socket.userId}`;
+      }
+      io.sockets
+        .to(roomName)
+        .emit("msg-init", { msg: privateMsgMap.get(roomName) || [] });
+    } else if (targetId.length > 1) {
+      roomName = targetId.join(",");
+      io.sockets
+        .to(roomName)
+        .emit("msg-init", { msg: groupMsgMap.get(roomName) || [] });
     }
-    io.sockets
-      .to(roomName)
-      .emit("msg-init", { msg: privateMsgMap.get(roomName) || [] });
+    console.log(roomName);
   });
 
   socket.on("disconnect", () => {
@@ -96,6 +128,15 @@ function setUserMap(userId, socketId) {
     socketId,
   });
 }
+function setGroupUserMap(userId, socketId) {
+  userMap.set(userId, {
+    ...userMap.get(socketId),
+    status: true,
+    userId,
+    socketId,
+    type: "group",
+  });
+}
 
 function setPrivateMsgMap(roomNumber, res) {
   privateMsgMap.has(roomNumber)
@@ -116,7 +157,35 @@ function setPrivateMsgMap(roomNumber, res) {
       ]);
   console.log(privateMsgMap);
 }
-
+function setGroupeMsgMap(roomNumber, res) {
+  groupMsgMap.has(roomNumber)
+    ? groupMsgMap.set(roomNumber, [
+        ...groupMsgMap.get(roomNumber),
+        {
+          msg: res.msg,
+          toUserId: res.toUserId,
+          fromUserId: res.fromUserId,
+        },
+      ])
+    : groupMsgMap.set(roomNumber, [
+        {
+          msg: res.msg,
+          toUserId: res.toUserId,
+          fromUserId: res.fromUserId,
+        },
+      ]);
+  console.log(groupMsgMap);
+}
 function setStatus(userId) {
   userMap.set(userId, { ...userMap.get(userId), status: false });
+}
+function setPersonalUserMap(userId, addedUserId, addedUserSocketId) {
+  personalUserMap.set(userId, [
+    ...personalUserMap.get(userId),
+    {
+      status: true,
+      userId: addedUserId,
+      socketId: addedUserSocketId,
+    },
+  ]);
 }
