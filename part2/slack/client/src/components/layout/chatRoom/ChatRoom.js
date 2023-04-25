@@ -101,9 +101,16 @@ const ChatRoom = () => {
     };
     const onGroupSendHandler = (e) => {
         e.preventDefault();
-        console.log(groupUser, loginInfo.userId);
-        if (!userList.filter((v) => v.userId === groupUser).length > 0) return;
-        if (groupUser === loginInfo.userId) return;
+        if (!userList.filter((v) => v.userId === groupUser).length > 0) {
+            alert("The user does not exist.");
+            setGroupUser("");
+            return;
+        }
+        if (groupUser === loginInfo.userId) {
+            alert("Please, Choose someone else.");
+            setGroupUser("");
+            return;
+        }
         setGroupChatUsers([...groupChatUsers, groupUser, loginInfo.userId]);
         setGroupUser("");
     };
