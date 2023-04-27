@@ -25,65 +25,6 @@ io.on("connection", (socket) => {
     io.sockets.emit("user-list", mapToArray(userMap));
     socket.emit("group-list", groupMap.get(socket.userId));
 
-    socket.on("userListUpdate", (res) => {
-        const { socketId } = res;
-        socketId.split(",").forEach((v) => {
-            io.sockets
-                .to(userMap.get(v).socketId)
-                .emit("group-chat-req", { roomNumber: socketId });
-        });
-    });
-    socket.on("groupMsg", (res) => {
-        const { msg, toUserSocketId, toUserId, fromUserId } = res;
-        setGroupeMsgMap(toUserSocketId, res);
-        socket.broadcast.in(toUserSocketId).emit("group-msg", {
-            msg: msg,
-            toUserId,
-            fromUserId,
-            toUserSocketId: toUserSocketId,
-        });
-    });
-
-    socket.on("privateMsg", (res) => {
-        const { msg, toUserId, toUserSocketId } = res;
-        let privateRoom = getRoomNumber(toUserId, socket.userId);
-        if (!privateRoom) {
-            privateRoom = `${toUserId}-${socket.userId}`;
-            rooms.push(privateRoom);
-            // socket.join(privateRoom);
-        }
-        setPrivateMsgMap(privateRoom, res);
-        socket.broadcast.in(privateRoom).emit("private-msg", {
-            msg: msg,
-            toUserId: toUserId,
-            fromUserId: socket.userId,
-        });
-    });
-    socket.on("resGroupJoinRoom", (res) => {
-        socket.join(res);
-        setGroupUserMap(socket.userId, res, res);
-        console.log(
-            socket.userId,
-            groupMap,
-            userMap.get(socket.userId).socketId
-        );
-        io.sockets
-            .to(userMap.get(socket.userId).socketId)
-            .emit("group-list", groupMap.get(socket.userId));
-    });
-    socket.on("reqJoinRoom", (res) => {
-        const { targetId, targetSocketId } = res;
-        let roomName = getRoomNumber(targetId, socket.userId);
-        if (!roomName) {
-            roomName = `${targetId}-${socket.userId}`;
-        }
-        io.sockets
-            .to(targetSocketId)
-            .emit("msg-alert", { roomNumber: roomName });
-    });
-    socket.on("resJoinRoom", (res) => {
-        socket.join(res);
-    });
     socket.on("msgInit", (res) => {
         const { targetId } = res;
         let roomName = null;
@@ -109,6 +50,71 @@ io.on("connection", (socket) => {
         setStatus(socket.userId);
         io.sockets.emit("user-list", mapToArray(userMap));
         console.log("disconnect...");
+    });
+});
+
+io.of("/private").on("connection", (socket) => {
+    socket.on("privateMsg", (res) => {
+        const { msg, toUserId, toUserSocketId } = res;
+        let privateRoom = getRoomNumber(toUserId, socket.userId);
+        if (!privateRoom) {
+            privateRoom = `${toUserId}-${socket.userId}`;
+            rooms.push(privateRoom);
+            // socket.join(privateRoom);
+        }
+        setPrivateMsgMap(privateRoom, res);
+        socket.broadcast.in(privateRoom).emit("private-msg", {
+            msg: msg,
+            toUserId: toUserId,
+            fromUserId: socket.userId,
+        });
+    });
+    socket.on("reqJoinRoom", (res) => {
+        const { targetId, targetSocketId } = res;
+        let roomName = getRoomNumber(targetId, socket.userId);
+        if (!roomName) {
+            roomName = `${targetId}-${socket.userId}`;
+        }
+        io.sockets
+            .to(targetSocketId)
+            .emit("msg-alert", { roomNumber: roomName });
+    });
+    socket.on("resJoinRoom", (res) => {
+        socket.join(res);
+    });
+});
+// 2
+io.of("/group").on("connection", (socket) => {
+    socket.on("userListUpdate", (res) => {
+        const { socketId } = res;
+        socketId.split(",").forEach((v) => {
+            io.sockets
+                .to(userMap.get(v).socketId)
+                .emit("group-chat-req", { roomNumber: socketId });
+        });
+    });
+    socket.on("groupMsg", (res) => {
+        const { msg, toUserSocketId, toUserId, fromUserId } = res;
+        setGroupeMsgMap(toUserSocketId, res);
+        socket.broadcast.in(toUserSocketId).emit("group-msg", {
+            msg: msg,
+            toUserId,
+            fromUserId,
+            toUserSocketId: toUserSocketId,
+        });
+    });
+
+    socket.on("resGroupJoinRoom", (res) => {
+        socket.join(res);
+        setGroupUserMap(socket.userId, res, res);
+        console.log(
+            socket.userId,
+            groupMap,
+            userMap.get(socket.userId).socketId
+        );
+        io.sockets
+            .to(userMap.get(socket.userId).socketId)
+            .emit("group-list", groupMap.get(socket.userId));
     });
 });
 
