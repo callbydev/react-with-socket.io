@@ -1,9 +1,20 @@
-
-const rooms = [];
 const privateMsgMap = new Map();
 
-const privateMsg = (io) => {
+const mongoose = require("mongoose");
+// const privateRoom = require("./schema/Room");
+const { privateRoom } = require("./schema/Private");
 
+const uri =
+  "mongodb+srv://slack:1111@cluster0.g4q1ntc.mongodb.net/?retryWrites=true&w=majority";
+
+mongoose.set("strictQuery", false);
+mongoose
+  .connect(uri)
+  .then(() => console.log("MongoDB Connected..."))
+  .catch((err) => console.log(err));
+
+const privateMsg = (io) => {
+  console.log(privateRoom);
   io.of("/private").use((socket, next) => {
     const userId = socket.handshake.auth.userId;
     if (!userId) {
@@ -15,60 +26,53 @@ const privateMsg = (io) => {
   });
 
   io.of("/private").on("connection", (socket) => {
-    socket.on("msgInit", (res) => {
+    socket.on("msgInit", async (res) => {
       const { targetId } = res;
-      let roomName = null;
       const userId = targetId[0];
-      roomName = getRoomNumber(userId, socket.userId);
-      if (!roomName) {
-        roomName = `${userId}-${socket.userId}`;
-      }
+      let cc = await getRoomNumber2(userId, socket.userId);
+      if (!cc) return;
+      console.log("msgInit", cc._id);
       io.of("/private")
-        .to(roomName)
-        .emit("private-msg-init", { msg: privateMsgMap.get(roomName) || [] });
+        .to(cc._id)
+        .emit("private-msg-init", { msg: privateMsgMap.get(cc._id) || [] });
     });
-    socket.on("privateMsg", (res) => {
+    socket.on("privateMsg", async (res) => {
       const { msg, toUserId, toUserSocketId } = res;
-      let privateRoom = getRoomNumber(toUserId, socket.userId);
-      if (!privateRoom) {
-        privateRoom = `${toUserId}-${socket.userId}`;
-        rooms.push(privateRoom);
-      }
-      setPrivateMsgMap(privateRoom, res);
-      socket.broadcast.in(privateRoom).emit("private-msg", {
+      let aa = await getRoomNumber2(toUserId, socket.userId);
+      if (!aa) return;
+      setPrivateMsgMap(aa._id, res);
+      socket.broadcast.in(aa._id).emit("private-msg", {
         msg: msg,
         toUserId: toUserId,
         fromUserId: socket.userId,
       });
     });
-    socket.on("reqJoinRoom", (res) => {
+    socket.on("reqJoinRoom", async (res) => {
       const { targetId, targetSocketId } = res;
-      let roomName = getRoomNumber(targetId, socket.userId);
-      console.log(roomName);
-      if (!roomName) {
-        roomName = `${targetId}-${socket.userId}`;
+      let bb = await getRoomNumber2(targetId, socket.userId);
+      if (!bb) {
+        bb = `${targetId}-${socket.userId}`;
+        await findOrCreateDocument(bb);
+      } else {
+        bb = bb._id;
       }
-      socket.join(roomName);
+      console.log("reqJoinRoom", bb);
+      socket.join(bb);
       io.of("/private")
         .to(targetSocketId)
-        .emit("msg-alert", { roomNumber: roomName });
+        .emit("msg-alert", { roomNumber: bb });
     });
     socket.on("resJoinRoom", (res) => {
       socket.join(res);
     });
   });
-
 };
 
-function getRoomNumber(fromId, toId) {
-  const _myRooms = rooms;
-  if (_myRooms.includes(`${fromId}-${toId}`)) {
-    return `${fromId}-${toId}`;
-  }
-  if (_myRooms.includes(`${toId}-${fromId}`)) {
-    return `${toId}-${fromId}`;
-  }
-  return null;
+async function getRoomNumber2(fromId, toId) {
+  return (
+    (await privateRoom.findById(`${fromId}-${toId}`)) ||
+    (await privateRoom.findById(`${toId}-${fromId}`))
+  );
 }
 
 function setPrivateMsgMap(roomNumber, res) {
@@ -88,6 +92,16 @@ function setPrivateMsgMap(roomNumber, res) {
           fromUserId: res.fromUserId,
         },
       ]);
+}
+
+async function findOrCreateDocument(room) {
+  if (room == null) return;
+
+  const document = await privateRoom.findById(room);
+  if (document) return document;
+  return await privateRoom.create({
+    _id: room,
+  });
 }
 
 module.exports.privateMsginit = privateMsg;

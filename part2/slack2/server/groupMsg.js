@@ -2,6 +2,18 @@ const groupMap = new Map();
 const groupUserListMap = new Map();
 const groupMsgMap = new Map();
 
+const mongoose = require("mongoose");
+const Document = require("./schema/User");
+
+const uri =
+  "mongodb+srv://slack:1111@cluster0.g4q1ntc.mongodb.net/?retryWrites=true&w=majority";
+
+mongoose.set("strictQuery", false);
+mongoose
+  .connect(uri)
+  .then(() => console.log("MongoDB Connected..."))
+  .catch((err) => console.log(err));
+
 const groupMsg = (io) => {
   io.of("/group").use((socket, next) => {
     const userId = socket.handshake.auth.userId;
@@ -24,9 +36,13 @@ const groupMsg = (io) => {
         .to(roomName)
         .emit("group-msg-init", { msg: groupMsgMap.get(roomName) || [] });
     });
-    socket.on("groupUserListUpdate", (res) => {
+    socket.on("groupUserListUpdate", async (res) => {
       const { socketId } = res;
+      // const document = await Document.find()
+      //   .where("_id")
+      //   .in(socketId.split(","));
       socketId.split(",").forEach((v) => {
+        // const document = await Document.findById(v);
         io.of("/group")
           .to(groupUserListMap.get(v).socketId)
           .emit("group-chat-req", {
@@ -39,6 +55,7 @@ const groupMsg = (io) => {
     socket.on("groupMsg", (res) => {
       const { msg, toUserSocketId, toUserId, fromUserId } = res;
       setGroupeMsgMap(toUserSocketId, res);
+      console.log(groupMap);
       socket.broadcast.in(toUserSocketId).emit("group-msg", {
         msg: msg,
         toUserId,
@@ -76,6 +93,19 @@ function setGroupUserMap(loginUserId, userId, socketId) {
       type: "group",
     },
   ]);
+}
+
+async function findOrCreateDocument(loginUserId, userId, socketId) {
+  if (userId == null) return;
+
+  if (document) return document;
+  return await Document.create({
+    _id: loginUserId,
+    status: true,
+    userId: userId,
+    socketId: socketId,
+    type: "group",
+  });
 }
 
 function setGroupeMsgMap(roomNumber, res) {
