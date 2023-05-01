@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { css } from "@emotion/react";
 import {
   indexContainerCss,
@@ -9,8 +9,6 @@ import {
   btnCss,
 } from "./IndexContainer.style";
 import { socket, socketPrivate, socketGroup } from "../../socket";
-import { Context } from "../../context";
-import { AUTH_INFO } from "../../context/action";
 import { useNavigate } from "react-router-dom";
 import logo from "../../images/logo.png";
 
@@ -26,6 +24,7 @@ const IndexContainer = () => {
   }, []);
   const onLoginHandler = (e) => {
     e.preventDefault();
+    if (!user) return;
     socket.auth = { userId: user };
     socket.connect();
     socketPrivate.auth = { userId: user };
