@@ -1,6 +1,4 @@
-const groupMap = new Map();
-const groupUserListMap = new Map();
-const groupMsgMap = new Map();
+const { GroupUserList, GroupRoom, GroupMsg } = require("./schema/Group");
 
 const groupMsg = (io) => {
   io.of("/group").use((socket, next) => {
@@ -13,82 +11,62 @@ const groupMsg = (io) => {
     next();
   });
 
-  io.of("/group").on("connection", (socket) => {
-    setGroupUserListMap(socket.userId, socket.id);
-    socket.emit("group-list", groupMap.get(socket.userId));
-    socket.on("msgInit", (res) => {
+  io.of("/group").on("connection", async (socket) => {
+    await createGroupUser(socket.userId, socket.id);
+    const groupRoom = await GroupRoom.find({
+      loginUserId: socket.userId,
+    }).exec();
+    socket.emit("group-list", groupRoom);
+    socket.on("msgInit", async (res) => {
       const { targetId } = res;
       let roomName = null;
       roomName = targetId.join(",");
+      const groupMsg = await GroupMsg.find({ roomNumber: roomName }).exec();
       io.of("/group")
         .to(roomName)
-        .emit("group-msg-init", { msg: groupMsgMap.get(roomName) || [] });
+        .emit("group-msg-init", { msg: groupMsg || [] });
     });
     socket.on("groupUserListUpdate", async (res) => {
       const { socketId } = res;
-      // const document = await Document.find()
-      //   .where("_id")
-      //   .in(socketId.split(","));
-      socketId.split(",").forEach((v) => {
-        // const document = await Document.findById(v);
-        io.of("/group")
-          .to(groupUserListMap.get(v).socketId)
-          .emit("group-chat-req", {
-            roomNumber: socketId,
-            socketId: groupUserListMap.get(v).socketId,
-            userId: socket.userId,
-          });
+      const groupUser = await GroupUserList.find()
+        .where("userId")
+        .in(socketId.split(","));
+      groupUser.forEach((v) => {
+        io.of("/group").to(v.socketId).emit("group-chat-req", {
+          roomNumber: socketId,
+          socketId: v.socketId,
+          userId: socket.userId,
+        });
       });
     });
-    socket.on("groupMsg", (res) => {
+    socket.on("groupMsg", async (res) => {
       const { msg, toUserSocketId, toUserId, fromUserId } = res;
-      setGroupeMsgMap(toUserSocketId, res);
-      console.log(groupMap);
       socket.broadcast.in(toUserSocketId).emit("group-msg", {
         msg: msg,
         toUserId,
         fromUserId,
         toUserSocketId: toUserSocketId,
       });
+      await createMsgDocument(toUserSocketId, res);
     });
-    socket.on("resGroupJoinRoom", (res) => {
+    socket.on("resGroupJoinRoom", async (res) => {
       const { roomNumber, socketId } = res;
       socket.join(roomNumber);
-      setGroupUserMap(socket.userId, roomNumber, roomNumber);
+      await createGroupRoom(socket.userId, roomNumber, roomNumber);
 
-      io.of("/group")
-        .to(socketId)
-        .emit("group-list", groupMap.get(socket.userId));
+      const groupRoom = await GroupRoom.find({
+        loginUserId: socket.userId,
+      }).exec();
+      io.of("/group").to(socketId).emit("group-list", groupRoom);
     });
   });
 };
 
-function setGroupUserListMap(userId, socketId) {
-  groupUserListMap.set(userId, {
-    ...groupUserListMap.get(socketId),
-    status: true,
-    userId,
-    socketId,
-  });
-}
-function setGroupUserMap(loginUserId, userId, socketId) {
-  groupMap.set(loginUserId, [
-    ...(groupMap.get(loginUserId) || []),
-    {
-      status: true,
-      userId,
-      socketId,
-      type: "group",
-    },
-  ]);
-}
+async function createGroupRoom(loginUserId, userId, socketId) {
+  if (loginUserId == null) return;
 
-async function findOrCreateDocument(loginUserId, userId, socketId) {
-  if (userId == null) return;
-
-  if (document) return document;
-  return await Document.create({
-    _id: loginUserId,
+  return await GroupRoom.create({
+    loginUserId: loginUserId,
     status: true,
     userId: userId,
     socketId: socketId,
@@ -96,23 +74,25 @@ async function findOrCreateDocument(loginUserId, userId, socketId) {
   });
 }
 
-function setGroupeMsgMap(roomNumber, res) {
-  groupMsgMap.has(roomNumber)
-    ? groupMsgMap.set(roomNumber, [
-        ...groupMsgMap.get(roomNumber),
-        {
-          msg: res.msg,
-          toUserId: res.toUserId,
-          fromUserId: res.fromUserId,
-        },
-      ])
-    : groupMsgMap.set(roomNumber, [
-        {
-          msg: res.msg,
-          toUserId: res.toUserId,
-          fromUserId: res.fromUserId,
-        },
-      ]);
+async function createGroupUser(userId, socketId) {
+  if (userId == null) return;
+
+  return await GroupUserList.create({
+    status: true,
+    userId: userId,
+    socketId: socketId,
+  });
+}
+
+async function createMsgDocument(roomNumber, res) {
+  if (roomNumber == null) return;
+
+  return await GroupMsg.create({
+    roomNumber: roomNumber,
+    msg: res.msg,
+    toUserId: res.toUserId,
+    fromUserId: res.fromUserId,
+  });
 }
 
 module.exports.groupMsginit = groupMsg;

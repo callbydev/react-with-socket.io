@@ -1,4 +1,4 @@
-const Document = require("./schema/User");
+const User = require("./schema/User");
 
 const common = (io) => {
   io.use(async (socket, next) => {
@@ -8,38 +8,33 @@ const common = (io) => {
       return next(new Error("invalid userId"));
     }
     socket.userId = userId;
-    await findOrCreateDocument(socket.userId, socket.id);
+    await findOrCreateUser(socket.userId, socket.id);
     next();
   });
 
   io.on("connection", async (socket) => {
-    io.sockets.emit("user-list", await Document.find());
+    io.sockets.emit("user-list", await User.find());
 
     socket.on("disconnect", async () => {
-      await Document.findOneAndUpdate(
+      await User.findOneAndUpdate(
         { _id: socket.userId },
         { status: false }
       );
-      io.sockets.emit("user-list", await Document.find());
+      io.sockets.emit("user-list", await User.find());
       console.log("disconnect...");
     });
   });
 };
 
-
-// function setStatus(userId) {
-//   userMap.set(userId, { ...userMap.get(userId), status: false });
-// }
-
-async function findOrCreateDocument(userId, socketId) {
+async function findOrCreateUser(userId, socketId) {
   if (userId == null) return;
 
-  const document = await Document.findOneAndUpdate(
+  const document = await User.findOneAndUpdate(
     { _id: userId },
     { status: true }
   );
   if (document) return document;
-  return await Document.create({
+  return await User.create({
     _id: userId,
     status: true,
     userId: userId,
