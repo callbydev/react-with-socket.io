@@ -36,7 +36,7 @@ const privateMsg = (io) => {
       let privateRoom = await getRoomNumber(targetId, socket.userId);
       if (!privateRoom) {
         privateRoom = `${targetId}-${socket.userId}`;
-        await findOrCreateRoomDocument(bb);
+        await findOrCreateRoomDocument(privateRoom);
       } else {
         privateRoom = privateRoom._id;
       }

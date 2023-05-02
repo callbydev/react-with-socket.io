@@ -1,18 +1,18 @@
 const { GroupUserList, GroupRoom, GroupMsg } = require("./schema/Group");
 
 const groupMsg = (io) => {
-  io.of("/group").use((socket, next) => {
+  io.of("/group").use(async (socket, next) => {
     const userId = socket.handshake.auth.userId;
     if (!userId) {
       console.log("err");
       return next(new Error("invalid userId"));
     }
     socket.userId = userId;
+    await createGroupUser(userId, socket.id);
     next();
   });
 
   io.of("/group").on("connection", async (socket) => {
-    await createGroupUser(socket.userId, socket.id);
     const groupRoom = await GroupRoom.find({
       loginUserId: socket.userId,
     }).exec();
@@ -49,6 +49,10 @@ const groupMsg = (io) => {
       });
       await createMsgDocument(toUserSocketId, res);
     });
+    socket.on("reqGroupJoinRoom", (res) => {
+      const { roomNumber } = res;
+      socket.join(roomNumber);
+    });
     socket.on("resGroupJoinRoom", async (res) => {
       const { roomNumber, socketId } = res;
       socket.join(roomNumber);
@@ -76,6 +80,11 @@ async function createGroupRoom(loginUserId, userId, socketId) {
 
 async function createGroupUser(userId, socketId) {
   if (userId == null) return;
+  const document = await GroupUserList.findOneAndUpdate(
+    { userId: userId },
+    { socketId: socketId }
+  );
+  if (document) return document;
 
   return await GroupUserList.create({
     status: true,

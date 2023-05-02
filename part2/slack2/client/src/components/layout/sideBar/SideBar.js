@@ -91,10 +91,10 @@ const SideBar = () => {
         targetSocketId: e.target.dataset.socket,
       },
     });
-    // socket.emit("reqGroupJoinRoom", {
-    //   targetId: id,
-    //   targetSocketId: e.target.dataset.socket,
-    // });
+    socketGroup.emit("reqGroupJoinRoom", {
+      roomNumber: id,
+      socketId: e.target.dataset.socket,
+    });
     dispatch({
       type: GROUP_CHAT,
       payload: {
