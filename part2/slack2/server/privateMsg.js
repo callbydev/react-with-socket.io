@@ -1,20 +1,6 @@
-const privateMsgMap = new Map();
-
-const mongoose = require("mongoose");
-// const privateRoom = require("./schema/Room");
-const { privateRoom } = require("./schema/Private");
-
-const uri =
-  "mongodb+srv://slack:1111@cluster0.g4q1ntc.mongodb.net/?retryWrites=true&w=majority";
-
-mongoose.set("strictQuery", false);
-mongoose
-  .connect(uri)
-  .then(() => console.log("MongoDB Connected..."))
-  .catch((err) => console.log(err));
+const { PrivateRoom, PrivateMsg } = require("./schema/Private");
 
 const privateMsg = (io) => {
-  console.log(privateRoom);
   io.of("/private").use((socket, next) => {
     const userId = socket.handshake.auth.userId;
     if (!userId) {
@@ -31,28 +17,26 @@ const privateMsg = (io) => {
       const userId = targetId[0];
       let cc = await getRoomNumber2(userId, socket.userId);
       if (!cc) return;
-      console.log("msgInit", cc._id);
-      io.of("/private")
-        .to(cc._id)
-        .emit("private-msg-init", { msg: privateMsgMap.get(cc._id) || [] });
+      const msgList = await PrivateMsg.find({ roomNumber: cc._id }).exec();
+      io.of("/private").to(cc._id).emit("private-msg-init", { msg: msgList });
     });
     socket.on("privateMsg", async (res) => {
       const { msg, toUserId, toUserSocketId } = res;
       let aa = await getRoomNumber2(toUserId, socket.userId);
       if (!aa) return;
-      setPrivateMsgMap(aa._id, res);
       socket.broadcast.in(aa._id).emit("private-msg", {
         msg: msg,
         toUserId: toUserId,
         fromUserId: socket.userId,
       });
+      await createMsgDocument(aa._id, res);
     });
     socket.on("reqJoinRoom", async (res) => {
       const { targetId, targetSocketId } = res;
       let bb = await getRoomNumber2(targetId, socket.userId);
       if (!bb) {
         bb = `${targetId}-${socket.userId}`;
-        await findOrCreateDocument(bb);
+        await findOrCreateRoomDocument(bb);
       } else {
         bb = bb._id;
       }
@@ -70,37 +54,29 @@ const privateMsg = (io) => {
 
 async function getRoomNumber2(fromId, toId) {
   return (
-    (await privateRoom.findById(`${fromId}-${toId}`)) ||
-    (await privateRoom.findById(`${toId}-${fromId}`))
+    (await PrivateRoom.findById(`${fromId}-${toId}`)) ||
+    (await PrivateRoom.findById(`${toId}-${fromId}`))
   );
 }
 
-function setPrivateMsgMap(roomNumber, res) {
-  privateMsgMap.has(roomNumber)
-    ? privateMsgMap.set(roomNumber, [
-        ...privateMsgMap.get(roomNumber),
-        {
-          msg: res.msg,
-          toUserId: res.toUserId,
-          fromUserId: res.fromUserId,
-        },
-      ])
-    : privateMsgMap.set(roomNumber, [
-        {
-          msg: res.msg,
-          toUserId: res.toUserId,
-          fromUserId: res.fromUserId,
-        },
-      ]);
-}
-
-async function findOrCreateDocument(room) {
+async function findOrCreateRoomDocument(room) {
   if (room == null) return;
 
-  const document = await privateRoom.findById(room);
+  const document = await PrivateRoom.findById(room);
   if (document) return document;
-  return await privateRoom.create({
+  return await PrivateRoom.create({
     _id: room,
+  });
+}
+
+async function createMsgDocument(roomNumber, res) {
+  if (roomNumber == null) return;
+
+  return await PrivateMsg.create({
+    roomNumber: roomNumber,
+    msg: res.msg,
+    toUserId: res.toUserId,
+    fromUserId: res.fromUserId,
   });
 }
 

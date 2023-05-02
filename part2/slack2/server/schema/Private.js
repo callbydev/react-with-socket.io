@@ -1,10 +1,10 @@
 const { Schema, model } = require("mongoose");
 
 const msg = new Schema({
-  _id: String,
-  status: Boolean,
-  userId: String,
-  socketId: String,
+  roomNumber: String,
+  msg: String,
+  toUserId: String,
+  fromUserId: String,
 });
 
 const room = new Schema({
@@ -12,6 +12,6 @@ const room = new Schema({
 });
 
 module.exports = {
-  privateMsg: model("Private-msg", msg),
-  privateRoom: model("Private-room", room),
+  PrivateMsg: model("Private-msg", msg),
+  PrivateRoom: model("Private-room", room),
 };

@@ -2,18 +2,6 @@ const groupMap = new Map();
 const groupUserListMap = new Map();
 const groupMsgMap = new Map();
 
-const mongoose = require("mongoose");
-const Document = require("./schema/User");
-
-const uri =
-  "mongodb+srv://slack:1111@cluster0.g4q1ntc.mongodb.net/?retryWrites=true&w=majority";
-
-mongoose.set("strictQuery", false);
-mongoose
-  .connect(uri)
-  .then(() => console.log("MongoDB Connected..."))
-  .catch((err) => console.log(err));
-
 const groupMsg = (io) => {
   io.of("/group").use((socket, next) => {
     const userId = socket.handshake.auth.userId;

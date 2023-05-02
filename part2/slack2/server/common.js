@@ -1,14 +1,4 @@
-const mongoose = require("mongoose");
 const Document = require("./schema/User");
-
-const uri =
-  "mongodb+srv://slack:1111@cluster0.g4q1ntc.mongodb.net/?retryWrites=true&w=majority";
-
-mongoose.set("strictQuery", false);
-mongoose
-  .connect(uri)
-  .then(() => console.log("MongoDB Connected..."))
-  .catch((err) => console.log(err));
 
 const common = (io) => {
   io.use(async (socket, next) => {
