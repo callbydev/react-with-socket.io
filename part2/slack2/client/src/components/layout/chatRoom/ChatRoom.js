@@ -147,7 +147,7 @@ const ChatRoom = () => {
       userId: socketId,
       type: "group",
     };
-    socketGroup.emit("groupUserListUpdate", user);
+    socketGroup.emit("reqGroupJoinRoom", user);
     setGroupChatUsers([]);
   };
   const onGroupMsgSendHandler = () => {

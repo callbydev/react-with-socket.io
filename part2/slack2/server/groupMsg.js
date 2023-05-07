@@ -1,6 +1,8 @@
+// 1
 const { GroupUserList, GroupRoom, GroupMsg } = require("./schema/Group");
 
 const groupMsg = (io) => {
+  // 2
   io.of("/group").use(async (socket, next) => {
     const userId = socket.handshake.auth.userId;
     if (!userId) {
@@ -12,11 +14,13 @@ const groupMsg = (io) => {
     next();
   });
 
+  // 3
   io.of("/group").on("connection", async (socket) => {
     const groupRoom = await GroupRoom.find({
       loginUserId: socket.userId,
     }).exec();
     socket.emit("group-list", groupRoom);
+    // 4
     socket.on("msgInit", async (res) => {
       const { targetId } = res;
       let roomName = null;
@@ -26,7 +30,8 @@ const groupMsg = (io) => {
         .to(roomName)
         .emit("group-msg-init", { msg: groupMsg || [] });
     });
-    socket.on("groupUserListUpdate", async (res) => {
+    // 5
+    socket.on("reqGroupJoinRoom", async (res) => {
       const { socketId } = res;
       const groupUser = await GroupUserList.find()
         .where("userId")
@@ -39,6 +44,7 @@ const groupMsg = (io) => {
         });
       });
     });
+    // 6
     socket.on("groupMsg", async (res) => {
       const { msg, toUserSocketId, toUserId, fromUserId } = res;
       socket.broadcast.in(toUserSocketId).emit("group-msg", {
@@ -49,10 +55,12 @@ const groupMsg = (io) => {
       });
       await createMsgDocument(toUserSocketId, res);
     });
-    socket.on("reqGroupJoinRoom", (res) => {
+    // 7
+    socket.on("joinGroupRoom", (res) => {
       const { roomNumber } = res;
       socket.join(roomNumber);
     });
+    // 8
     socket.on("resGroupJoinRoom", async (res) => {
       const { roomNumber, socketId } = res;
       socket.join(roomNumber);
@@ -66,6 +74,7 @@ const groupMsg = (io) => {
   });
 };
 
+// 9
 async function createGroupRoom(loginUserId, userId, socketId) {
   if (loginUserId == null) return;
 
@@ -77,7 +86,7 @@ async function createGroupRoom(loginUserId, userId, socketId) {
     type: "group",
   });
 }
-
+// 10
 async function createGroupUser(userId, socketId) {
   if (userId == null) return;
   const document = await GroupUserList.findOneAndUpdate(
@@ -92,7 +101,7 @@ async function createGroupUser(userId, socketId) {
     socketId: socketId,
   });
 }
-
+// 11
 async function createMsgDocument(roomNumber, res) {
   if (roomNumber == null) return;
 

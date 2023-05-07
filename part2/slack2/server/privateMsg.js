@@ -1,6 +1,8 @@
+// 1
 const { PrivateRoom, PrivateMsg } = require("./schema/Private");
 
 const privateMsg = (io) => {
+  // 2
   io.of("/private").use((socket, next) => {
     const userId = socket.handshake.auth.userId;
     if (!userId) {
@@ -12,6 +14,7 @@ const privateMsg = (io) => {
   });
 
   io.of("/private").on("connection", (socket) => {
+    // 3
     socket.on("msgInit", async (res) => {
       const { targetId } = res;
       const userId = targetId[0];
@@ -20,6 +23,7 @@ const privateMsg = (io) => {
       const msgList = await PrivateMsg.find({ roomNumber: privateRoom._id }).exec();
       io.of("/private").to(privateRoom._id).emit("private-msg-init", { msg: msgList });
     });
+    // 4
     socket.on("privateMsg", async (res) => {
       const { msg, toUserId } = res;
       const privateRoom = await getRoomNumber(toUserId, socket.userId);
@@ -31,6 +35,7 @@ const privateMsg = (io) => {
       });
       await createMsgDocument(privateRoom._id, res);
     });
+    // 5
     socket.on("reqJoinRoom", async (res) => {
       const { targetId, targetSocketId } = res;
       let privateRoom = await getRoomNumber(targetId, socket.userId);
@@ -45,12 +50,14 @@ const privateMsg = (io) => {
         .to(targetSocketId)
         .emit("msg-alert", { roomNumber: privateRoom });
     });
+    // 6
     socket.on("resJoinRoom", (res) => {
       socket.join(res);
     });
   });
 };
 
+// 7
 async function getRoomNumber(fromId, toId) {
   return (
     (await PrivateRoom.findById(`${fromId}-${toId}`)) ||
@@ -58,6 +65,7 @@ async function getRoomNumber(fromId, toId) {
   );
 }
 
+// 8
 async function findOrCreateRoomDocument(room) {
   if (room == null) return;
 
@@ -68,6 +76,7 @@ async function findOrCreateRoomDocument(room) {
   });
 }
 
+// 9
 async function createMsgDocument(roomNumber, res) {
   if (roomNumber == null) return;
 

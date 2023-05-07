@@ -91,7 +91,7 @@ const SideBar = () => {
         targetSocketId: e.target.dataset.socket,
       },
     });
-    socketGroup.emit("reqGroupJoinRoom", {
+    socketGroup.emit("joinGroupRoom", {
       roomNumber: id,
       socketId: e.target.dataset.socket,
     });

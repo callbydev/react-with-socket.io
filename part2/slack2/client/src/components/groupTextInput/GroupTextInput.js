@@ -9,6 +9,7 @@ import {
   joinBtnCss,
 } from "./GroupTextInput.style";
 
+// 1
 const GroupTextInput = ({
   groupText,
   onChangeGroupTextHandler,
@@ -21,18 +22,21 @@ const GroupTextInput = ({
     <div css={groupTextContainerCss}>
       <span css={titleCss}>to:</span>
       <ul css={nameBoxCss}>
-        {groupChatUserList.map((v, i) => (
-          <li css={tagCss} key={`${i}-${v}`}>
-            {v}
-            <span
-              className="close"
-              data-id={v}
-              onClick={groupChatUserCloseClick}
-            >
-              X
-            </span>
-          </li>
-        ))}
+        {
+          // 2
+          groupChatUserList.map((v, i) => (
+            <li css={tagCss} key={`${i}-${v}`}>
+              {v}
+              <span
+                className="close"
+                data-id={v}
+                onClick={groupChatUserCloseClick}
+              >
+                X
+              </span>
+            </li>
+          ))
+        }
       </ul>
       <form onSubmit={onGroupSendHandler} css={groupFormCss}>
         <input
@@ -43,7 +47,9 @@ const GroupTextInput = ({
           onChangeGroupTextHandler={onChangeGroupTextHandler}
         />
       </form>
-      <button css={joinBtnCss} onClick={onJoinClick}>Join</button>
+      <button css={joinBtnCss} onClick={onJoinClick}>
+        Join
+      </button>
     </div>
   );
 };

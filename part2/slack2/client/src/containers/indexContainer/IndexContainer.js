@@ -8,6 +8,7 @@ import {
   inputCss,
   btnCss,
 } from "./IndexContainer.style";
+// 1
 import { socket, socketPrivate, socketGroup } from "../../socket";
 import { useNavigate } from "react-router-dom";
 import logo from "../../images/logo.png";
@@ -15,13 +16,15 @@ import logo from "../../images/logo.png";
 const IndexContainer = () => {
   const [user, setUser] = useState("");
   const navigate = useNavigate();
+  // 2
   useEffect(() => {
     socket.on("connect_error", (err) => {
-      if (err.message === "invalid username") {
+      if (err.message === "invalid userId") {
         console.log("err");
       }
     });
   }, []);
+  // 3
   const onLoginHandler = (e) => {
     e.preventDefault();
     if (!user) return;
@@ -33,6 +36,7 @@ const IndexContainer = () => {
     socketGroup.connect();
     navigate("/main");
   };
+  // 4
   const onUserNameHandler = (e) => {
     setUser(e.target.value);
   };

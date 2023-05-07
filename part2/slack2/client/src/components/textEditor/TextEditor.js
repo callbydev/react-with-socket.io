@@ -1,9 +1,11 @@
+// 1
 import { css } from "@emotion/react";
-import { containerCss, sendCss } from "./textEditor.style";
+import { containerCss, sendCss } from "./TextEditor.style";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { HiPaperAirplane } from "react-icons/hi2";
 
+// 2
 const modules = {
   toolbar: {
     containers: [

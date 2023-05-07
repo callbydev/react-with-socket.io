@@ -7,6 +7,7 @@ import {
     GROUP_LIST,
 } from "./action";
 
+// 1
 const initialState = {
     loginInfo: {
         userId: "",
@@ -27,6 +28,7 @@ const initialState = {
 
 const Context = createContext({});
 
+// 2
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         case AUTH_INFO:

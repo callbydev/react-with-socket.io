@@ -28,8 +28,6 @@ const EditorContainer = () => {
     const [text, setText] = useState("");
 
     // 4
-
-    // 5
     useEffect(() => {
         socket.emit("join", documentId);
         return () => {
@@ -37,7 +35,7 @@ const EditorContainer = () => {
         };
     }, []);
 
-    // 6
+    // 5
     useEffect(() => {
         socket.once("initDocument", (res) => {
             const { _document, userList } = res;
@@ -48,7 +46,7 @@ const EditorContainer = () => {
         });
     }, []);
 
-    // 7
+    // 6
     useEffect(() => {
         function setCursorHandler(user) {
             setCursor(user);
@@ -59,7 +57,7 @@ const EditorContainer = () => {
         };
     }, []);
 
-    // 8
+    // 7
     useEffect(() => {
         if (!reactQuillRef.current) return;
         cursorRef.current = reactQuillRef.current
@@ -67,7 +65,7 @@ const EditorContainer = () => {
             .getModule("cursors");
     }, []);
 
-    // 9
+    // 8
     useEffect(() => {
         function updateContentHandler(delta) {
             reactQuillRef.current.getEditor().updateContents(delta);
@@ -78,7 +76,7 @@ const EditorContainer = () => {
         };
     }, []);
 
-    // 10
+    // 9
     useEffect(() => {
         function updateHandler(res) {
             const { range, id } = res;
@@ -90,7 +88,7 @@ const EditorContainer = () => {
         };
     }, []);
 
-    // 11
+    // 10
     const onChangeTextHandler = (content, delta, source, editor) => {
         if (timerRef.current != null) {
             clearTimeout(timerRef.current);
@@ -106,7 +104,7 @@ const EditorContainer = () => {
         socket.emit("send-changes", delta);
     };
 
-    // 12
+    // 11
     function setCursor(id) {
         if (!cursorMap.get(id)) {
             cursorRef.current.createCursor(
@@ -118,12 +116,12 @@ const EditorContainer = () => {
         }
     }
 
-    // 13
+    // 12
     const debouncedUpdate = debounce((range, id) => {
         cursorMap.get(id).moveCursor(id, range);
     }, 500);
 
-    // 14
+    // 13
     const onChangeSelection = (selection, source, editor) => {
         if (source !== "user") return;
         socket.emit("cursor-changes", selection);

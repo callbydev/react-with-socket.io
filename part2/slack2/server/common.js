@@ -1,6 +1,8 @@
+// 1
 const User = require("./schema/User");
 
 const common = (io) => {
+  // 2
   io.use(async (socket, next) => {
     const userId = socket.handshake.auth.userId;
     if (!userId) {
@@ -12,6 +14,7 @@ const common = (io) => {
     next();
   });
 
+  // 3
   io.on("connection", async (socket) => {
     io.sockets.emit("user-list", await User.find());
 
@@ -26,6 +29,7 @@ const common = (io) => {
   });
 };
 
+// 4
 async function findOrCreateUser(userId, socketId) {
   if (userId == null) return;
 

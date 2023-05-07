@@ -1,6 +1,7 @@
 import { css } from "@emotion/react";
 import { userCss } from "./User.style";
 
+// 1
 const User = ({ id, status, onClick, socket, type }) => {
   return (
     <div

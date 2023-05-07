@@ -47,7 +47,6 @@ const MainContainer = () => {
   }, []);
   useEffect(() => {
     function setGroupListHandler(data) {
-      console.log(data);
       dispatch({
         type: GROUP_LIST,
         payload: data || [],
