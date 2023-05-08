@@ -13,10 +13,12 @@ import { USER_LIST, AUTH_INFO, GROUP_LIST } from "../../context/action";
 import { Context } from "../../context";
 
 const MainContainer = () => {
+  // 1
   const {
-    state: { loginInfo, userList },
+    state: { loginInfo },
     dispatch,
   } = useContext(Context);
+  // 2
   useEffect(() => {
     socket.on("connect", () => {
       dispatch({
@@ -33,6 +35,7 @@ const MainContainer = () => {
       socketGroup.disconnect();
     };
   }, []);
+  // 3
   useEffect(() => {
     function setUserListHandler(data) {
       dispatch({
@@ -45,6 +48,7 @@ const MainContainer = () => {
       socket.off("user-list", setUserListHandler);
     };
   }, []);
+  // 4
   useEffect(() => {
     function setGroupListHandler(data) {
       dispatch({
