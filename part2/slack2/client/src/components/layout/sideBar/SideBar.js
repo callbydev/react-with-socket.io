@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { css } from "@emotion/react";
 import { Context } from "../../../context";
 import { CURRENT_CHAT, GROUP_CHAT } from "../../../context/action";
@@ -13,10 +13,13 @@ import { BiChevronDown } from "react-icons/bi";
 import { socketPrivate, socketGroup } from "../../../socket";
 
 const SideBar = () => {
+  // 1
   const {
     state: { userList, loginInfo, currentChat, groupList },
     dispatch,
   } = useContext(Context);
+
+  // 2
   useEffect(() => {
     if (currentChat.targetId.length > 1) {
       socketGroup.emit("msgInit", {
@@ -28,6 +31,8 @@ const SideBar = () => {
       });
     }
   }, [currentChat.targetId]);
+
+  // 3
   useEffect(() => {
     function setMsgAlert(data) {
       socketPrivate.emit("resJoinRoom", data.roomNumber);
@@ -37,6 +42,8 @@ const SideBar = () => {
       socketPrivate.off("msg-alert", setMsgAlert);
     };
   }, []);
+
+  // 4
   useEffect(() => {
     function setGroupChat(data) {
       console.log("group", data);
@@ -50,6 +57,8 @@ const SideBar = () => {
       socketGroup.off("group-chat-req", setGroupChat);
     };
   }, []);
+
+  // 5
   const onUserClickHandler = (e) => {
     const { id } = e.target.dataset;
     dispatch({
@@ -72,6 +81,8 @@ const SideBar = () => {
       },
     });
   };
+
+  // 6
   const onMakeGroupChat = () => {
     dispatch({
       type: GROUP_CHAT,
@@ -81,6 +92,8 @@ const SideBar = () => {
       },
     });
   };
+
+  // 7
   const onGroupUserClickHandler = (e) => {
     const { id } = e.target.dataset;
     dispatch({
