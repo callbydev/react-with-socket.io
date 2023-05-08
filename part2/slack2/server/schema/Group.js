@@ -21,6 +21,7 @@ const msg = new Schema({
   msg: String,
   toUserId: String,
   fromUserId: String,
+  time: String,
 });
 
 module.exports = {

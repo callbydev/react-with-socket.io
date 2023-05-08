@@ -25,13 +25,14 @@ const privateMsg = (io) => {
     });
     // 4
     socket.on("privateMsg", async (res) => {
-      const { msg, toUserId } = res;
+      const { msg, toUserId, time } = res;
       const privateRoom = await getRoomNumber(toUserId, socket.userId);
       if (!privateRoom) return;
       socket.broadcast.in(privateRoom._id).emit("private-msg", {
         msg: msg,
         toUserId: toUserId,
         fromUserId: socket.userId,
+        time: time,
       });
       await createMsgDocument(privateRoom._id, res);
     });
@@ -85,6 +86,7 @@ async function createMsgDocument(roomNumber, res) {
     msg: res.msg,
     toUserId: res.toUserId,
     fromUserId: res.fromUserId,
+    time: res.time,
   });
 }
 
