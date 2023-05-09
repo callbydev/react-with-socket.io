@@ -46,7 +46,6 @@ const SideBar = () => {
   // 4
   useEffect(() => {
     function setGroupChat(data) {
-      console.log("group", data);
       socketGroup.emit("resGroupJoinRoom", {
         roomNumber: data.roomNumber,
         socketId: data.socketId,
